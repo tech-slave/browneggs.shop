@@ -66,7 +66,7 @@ function HomePage() {
 
 function App() {
   return (
-    <Router>
+    <Router basename='/helpful-fairy-9a63a7.netlify.app'>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
         <Navbar />
         <Routes>
