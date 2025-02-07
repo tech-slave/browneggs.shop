@@ -1,8 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { Egg, Car as Farm, Users, Heart } from 'lucide-react';
-import abt from './ftt.jpg';
-import bes_vid from './bes_vid_bg.png';
-import bes from './bes.gif';
+import bes from './bes_nbg.gif';
 export default function About() {
   const sectionsRef = useRef<HTMLDivElement>(null);
 
@@ -39,7 +37,7 @@ export default function About() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
           <div className="animate-on-scroll opacity-0">
             <img
-              src={bes_vid}
+              src={bes}
               alt="Our Farm"
               className="rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 hover:-translate-y-2"
             />
