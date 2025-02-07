@@ -1,7 +1,13 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="refresh" content="0; url=./" />
+    <meta http-equiv="refresh" content="0; url=./index.html" />
+    <script>
+      // Redirect to the index.html with the correct path
+      var path = window.location.pathname.replace('/browneggs.shop', '');
+      window.location.href = '/browneggs.shop' + path;
+    </script>
   </head>
-  <body></body>
+  <body>
+  </body>
 </html>
