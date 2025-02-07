@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowDown } from 'lucide-react';
 import video from './bes_hd.mp4';
-const adjectives = ['Premium', 'Healthy', 'Fresh', 'Organic', 'Farm-Fresh'];
+const adjectives = ['Premium', 'Healthy', 'Farm-Fresh', 'Organic', 'Grade A','Omega-3 enriched'];
 
 export default function Hero() {
   const [displayText, setDisplayText] = useState('');
@@ -51,7 +51,7 @@ export default function Hero() {
           muted
           loop
           playsInline
-          className="absolute w-full h-full object-cover opacity-70"
+          className="absolute w-full h-full object-cover opacity-100"
         >
           <source
             src={video}
