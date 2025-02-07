@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X, ShoppingCart, Sun, Moon } from 'lucide-react';
 import logo from './bes.png'
+import { Link } from 'react-router-dom';
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isDark, setIsDark] = useState(true);
@@ -56,9 +57,9 @@ export default function Navbar() {
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-4">
               {navItems.map((item) => (
-                <a
+                <Link
                   key={item}
-                  href={navLinks[item]}
+                  to={navLinks[item]}
                   className="relative px-3 py-2 text-sm font-medium group overflow-hidden"
                 >
                   <span className="relative z-10 text-white transition-colors duration-300 group-hover:text-amber-600">
@@ -66,7 +67,7 @@ export default function Navbar() {
                   </span>
                   <span className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-amber-400 to-yellow-500 transform scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100" />
                   <span className="absolute inset-0 bg-gradient-to-r from-amber-900/20 to-yellow-900/20 transform scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100" />
-                </a>
+                </Link>
               ))}
             </div>
           </div>
