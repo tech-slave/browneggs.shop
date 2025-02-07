@@ -2,7 +2,7 @@
   "name": "browneggs_web",
   "private": true,
   "version": "1.0.0",
-  "homepage": "https://helpful-fairy-9a63a7.netlify.app",
+  "homepage": "https://tech-slave.github.io/browneggs.shop",
   "type": "module",
 "scripts": {
   "predeploy": "npm run build",

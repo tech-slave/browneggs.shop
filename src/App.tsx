@@ -1,4 +1,4 @@
-// import React, { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -66,7 +66,7 @@ function HomePage() {
 
 function App() {
   return (
-    <Router basename='/helpful-fairy-9a63a7.netlify.app'>
+    <Router>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
         <Navbar />
         <Routes>
