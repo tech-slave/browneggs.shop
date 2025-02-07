@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { Egg, Car as Farm, Users, Heart } from 'lucide-react';
-import ftt from '../ftt.jpg';
+import ftt from './ftt.jpg';
 export default function About() {
   const sectionsRef = useRef<HTMLDivElement>(null);
 
