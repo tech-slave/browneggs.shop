@@ -103,13 +103,13 @@ export default function Navbar() {
       <div className={`md:hidden transition-all duration-500 ${isOpen ? 'max-h-64' : 'max-h-0'} overflow-hidden`}>
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gradient-to-r from-amber-900/90 via-black/90 to-amber-900/90 backdrop-blur-lg">
           {navItems.map((item) => (
-            <a
+            <Link
               key={item}
-              href={navLinks[item]}
+              to={navLinks[item]}
               className="block px-3 py-2 text-base font-medium text-white hover:text-amber-400 transition-colors duration-300"
             >
               {item}
-            </a>
+            </Link>
           ))}
         </div>
       </div>
