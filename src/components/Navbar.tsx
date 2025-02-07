@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X, ShoppingCart, Sun, Moon } from 'lucide-react';
-import logo from './bes.png'
 import { Link } from 'react-router-dom';
+import logo from './bes.png';
+
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isDark, setIsDark] = useState(true);
@@ -37,6 +38,10 @@ export default function Navbar() {
 
   const navItems = ['Home', 'Shop', 'About', 'Contact'];
 
+  const handleLinkClick = () => {
+    setIsOpen(false);
+  };
+
   return (
     <nav 
       className={`fixed w-full z-50 transition-all duration-500 ${
@@ -48,7 +53,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           <div className="flex items-center">
-          <img src={logo} alt="Logo" className="h-10 w-10 mr-2" />
+            <img src={logo} alt="Logo" className="h-10 w-10 mr-2" />
             <span className="text-2xl font-bold bg-gradient-to-r from-amber-400 via-blue-500 to-amber-600 bg-clip-text text-transparent animate-gradient">
               browneggs.shop
             </span>
@@ -107,6 +112,7 @@ export default function Navbar() {
               key={item}
               to={navLinks[item]}
               className="block px-3 py-2 text-base font-medium text-white hover:text-amber-400 transition-colors duration-300"
+              onClick={handleLinkClick}
             >
               {item}
             </Link>
