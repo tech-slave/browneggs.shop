@@ -28,10 +28,10 @@ export default function Navbar() {
   };
 
   const navLinks: { [key: string]: string } = {
-    Home: '/browneggs.shop',
-    Shop: '/browneggs.shop/#products',
-    About: '/browneggs.shop/about',
-    Contact: '/browneggs.shop/contact',
+    Home: '/',
+    Shop: '/#products',
+    About: '/about',
+    Contact: '/contact',
   };
 
   const navItems = ['Home', 'Shop', 'About', 'Contact'];
