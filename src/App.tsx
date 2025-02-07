@@ -1,5 +1,5 @@
 // import React, { useEffect } from 'react';
-import { HashRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Features from './components/Features';
@@ -66,7 +66,7 @@ function HomePage() {
 
 function App() {
   return (
-    <Router basename="/browneggs.shop">
+    <Router>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
         <Navbar />
         <Routes>
