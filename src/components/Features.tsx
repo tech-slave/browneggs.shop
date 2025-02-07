@@ -80,6 +80,8 @@ export default function Features() {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add('animate-fade-in');
+          } else {
+            entry.target.classList.remove('animate-fade-in');
           }
         });
       },

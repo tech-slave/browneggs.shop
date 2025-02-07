@@ -1,6 +1,8 @@
 import React, { useRef, useEffect } from 'react';
 import { Egg, Car as Farm, Users, Heart } from 'lucide-react';
 import abt from './ftt.jpg';
+import bes_vid from './bes_vid_bg.png';
+import bes from './bes.gif';
 export default function About() {
   const sectionsRef = useRef<HTMLDivElement>(null);
 
@@ -37,10 +39,18 @@ export default function About() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
           <div className="animate-on-scroll opacity-0">
             <img
-              src={abt}
+              src={bes_vid}
               alt="Our Farm"
               className="rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 hover:-translate-y-2"
             />
+            {/* <video
+                  src={bes_vid}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-full rounded-2xl object-cover"
+                /> */}
           </div>
           <div className="flex flex-col justify-center animate-on-scroll opacity-0">
             <h2 className="text-2xl font-semibold mb-4 bg-gradient-to-r from-amber-700 to-yellow-600 bg-clip-text text-transparent">

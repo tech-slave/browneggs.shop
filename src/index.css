@@ -12,11 +12,6 @@
   }
 }
 
-/* Custom cursor styles */
-* {
-  /* cursor: none; */
-}
-
 .custom-cursor {
   width: 20px;
   height: 20px;
@@ -43,6 +38,71 @@
 * {
   @apply transition-colors duration-200;
 }
+
+/* Animation classes */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes blink {
+  0%, 100% {
+    border-color: transparent;
+  }
+  50% {
+    border-color: #f59e0b;
+  }
+}
+
+@keyframes bounce-slow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.bes-animation {
+  animation: bounce-slow 30s linear forwards; /* Adjusted to animate once every 30 seconds */
+}
+* {
+  @apply transition-colors duration-200;
+}
+
+.bes-animation {
+  animation: none; /* Default to no animation */
+}
+
 
 /* Animation classes */
 @keyframes fade-up {
