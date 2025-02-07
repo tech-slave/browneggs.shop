@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowDown } from 'lucide-react';
-
+import video from './bes_hd.mp4';
 const adjectives = ['Premium', 'Healthy', 'Fresh', 'Organic', 'Farm-Fresh'];
 
 export default function Hero() {
@@ -54,7 +54,7 @@ export default function Hero() {
           className="absolute w-full h-full object-cover opacity-20"
         >
           <source
-            src="../bes_hd.mp4"
+            src={video}
             type="video/mp4"
           />
         </video>

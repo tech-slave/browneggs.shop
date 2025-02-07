@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X, ShoppingCart, Sun, Moon } from 'lucide-react';
-
+import logo from './bes.png'
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isDark, setIsDark] = useState(true);
@@ -47,7 +47,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           <div className="flex items-center">
-          <img src={"/browneggs.shop/assests/bes.png"} alt="Logo" className="h-10 w-10 mr-2" />
+          <img src={logo} alt="Logo" className="h-10 w-10 mr-2" />
             <span className="text-2xl font-bold bg-gradient-to-r from-amber-400 via-blue-500 to-amber-600 bg-clip-text text-transparent animate-gradient">
               browneggs.shop
             </span>
