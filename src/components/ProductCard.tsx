@@ -34,7 +34,7 @@ export default function ProductCard({ title, price, image, description }: Produc
   return (
     <div 
       ref={productCardRef} 
-      className="product-card group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white to-amber-50 dark:from-gray-800 dark:to-gray-700/50 shadow-lg hover:shadow-xl transition-all duration-500 hover:-translate-y-2 animate-float opacity-0"
+      className="product-card group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white to-amber-50 dark:from-gray-800 dark:to-gray-700/50 shadow-lg hover:shadow-xl transition-all duration-500 hover:-translate-y-2 animate-float"
     >
       <div className="aspect-square overflow-hidden">
         <img

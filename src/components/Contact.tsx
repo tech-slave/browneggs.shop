@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Phone, Mail, MapPin, Clock } from 'lucide-react';
+import emailjs from 'emailjs-com';
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -8,10 +9,26 @@ export default function Contact() {
     message: ''
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission (can be integrated with a backend service)
-    console.log('Form submitted:', formData);
+    setIsSubmitting(true);
+    setSuccessMessage('');
+    setErrorMessage('');
+
+    emailjs.sendForm('service_browneggs.shop', 'template_x7y1e2f', e.target as HTMLFormElement, 'kia_pDgRG557mvsgo')
+      .then((result) => {
+        setSuccessMessage('We received your message! We will get back to you within the next 4-6 hours. Have an egg-cellent day :) !');
+        setFormData({ name: '', email: '', message: '' });
+      }, (error) => {
+        setErrorMessage('Failed to send your message. Please try again later, or drop us a message on whatsapp at +91 94935 43214.');
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+      });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -20,9 +37,10 @@ export default function Contact() {
       [e.target.name]: e.target.value
     });
   };
+
   useEffect(() => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, []);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
 
   return (
     <div className="py-24 bg-gradient-to-b from-gray-50 via-amber-50/30 to-gray-50 dark:from-gray-900 dark:via-amber-900/20 dark:to-gray-900">
@@ -132,9 +150,12 @@ export default function Contact() {
                 <button
                   type="submit"
                   className="w-full bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-700 hover:to-yellow-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg"
+                  disabled={isSubmitting}
                 >
-                  Send Message
+                  {isSubmitting ? 'Sending...' : 'Send Message'}
                 </button>
+                {successMessage && <p className="text-green-500 mt-4">{successMessage}</p>}
+                {errorMessage && <p className="text-red-500 mt-4">{errorMessage}</p>}
               </div>
             </form>
           </div>

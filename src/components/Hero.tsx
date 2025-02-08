@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowDown } from 'lucide-react';
-import video from './bes_hd.mp4';
+import video from './bes_slow_hd.mp4';
 const adjectives = ['Premium', 'Healthy', 'Farm-Fresh', 'Organic', 'Grade A','Omega-3 enriched'];
 
 export default function Hero() {
@@ -51,7 +51,7 @@ export default function Hero() {
           muted
           loop
           playsInline
-          className="absolute w-full h-full object-cover "
+          className="absolute w-full h-full object-cover"
         >
           <source
             src={video}
@@ -60,24 +60,6 @@ export default function Hero() {
         </video>
         <div className="absolute inset-0 bg-gradient-to-br from-black/90 via-amber-900/50 to-black/80" />
       </div>
-
-      {/* Floating Eggs Background
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="egg-float absolute top-1/4 left-1/4 w-32 h-32 opacity-20">
-          <img
-            src="https://images.unsplash.com/photo-1569288052389-dac9b0ac9eac?auto=format&fit=crop&q=80"
-            alt="Floating egg"
-            className="w-full h-full object-cover rounded-full animate-float"
-          />
-        </div>
-        <div className="egg-float absolute top-1/3 right-1/4 w-24 h-24 opacity-20">
-          <img
-            src="https://images.unsplash.com/photo-1598965675045-45c5e72c7d05?auto=format&fit=crop&q=80"
-            alt="Floating egg"
-            className="w-full h-full object-cover rounded-full animate-float-delayed"
-          />
-        </div>
-      </div> */}
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 flex flex-col items-center text-center">
         <div className="max-w-2xl">
