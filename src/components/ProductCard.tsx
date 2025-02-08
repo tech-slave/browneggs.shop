@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { ShoppingCart } from 'lucide-react';
 
 interface ProductCardProps {
@@ -9,14 +9,33 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ title, price, image, description }: ProductCardProps) {
-  const handleWhatsAppOrder = () => {
-    const message = `Hi! I'm interested in ordering ${title} - ₹${price}`;
-    const whatsappUrl = `https://wa.me/+919493543214?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
-  };
+  const productCardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animate-fade-in');
+          } 
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    const productCards = document.querySelectorAll('.product-card');
+    productCards.forEach((card) => observer.observe(card));
+
+    return () => {
+      productCards.forEach((card) => observer.unobserve(card));
+    };
+  }, []);
 
   return (
-    <div id="products" className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white to-amber-50 dark:from-gray-800 dark:to-gray-700/50 shadow-lg hover:shadow-xl transition-all duration-500 hover:-translate-y-2 animate-fade-in">
+    <div 
+      ref={productCardRef} 
+      className="product-card group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white to-amber-50 dark:from-gray-800 dark:to-gray-700/50 shadow-lg hover:shadow-xl transition-all duration-500 hover:-translate-y-2 animate-float opacity-0"
+    >
       <div className="aspect-square overflow-hidden">
         <img
           src={image}
@@ -37,7 +56,10 @@ export default function ProductCard({ title, price, image, description }: Produc
             ₹{price}
           </span>
           <button 
-            onClick={handleWhatsAppOrder}
+            onClick={() => {
+              const message = `Hi! I'm interested in ordering ${title} - ₹${price}`;
+              window.open(`https://wa.me/+919493543214?text=${encodeURIComponent(message)}`, '_blank');
+            }}
             className="relative z-10 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white p-2 rounded-full transition-all duration-300 hover:scale-110"
           >
             <ShoppingCart size={20} />

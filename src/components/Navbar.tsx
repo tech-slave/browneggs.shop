@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, ShoppingCart, Sun, Moon } from 'lucide-react';
+import { Menu, X, ShoppingCart, Sun, Moon, Home, Info, Phone } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import logo from './bes.png';
 
@@ -37,7 +37,12 @@ export default function Navbar() {
     Contact: '/contact',
   };
 
-  const navItems = ['Home', 'Shop', 'About', 'Contact'];
+  const navItems = [
+    { name: 'Home', icon: <Home className="w-5 h-5 mr-2" /> },
+    { name: 'Shop', icon: <ShoppingCart className="w-5 h-5 mr-2" /> },
+    { name: 'About', icon: <Info className="w-5 h-5 mr-2" /> },
+    { name: 'Contact', icon: <Phone className="w-5 h-5 mr-2" /> },
+  ];
 
   const handleLinkClick = (item: string) => {
     setIsOpen(false);
@@ -80,13 +85,14 @@ export default function Navbar() {
             <div className="ml-10 flex items-baseline space-x-4">
               {navItems.map((item) => (
                 <Link
-                  key={item}
-                  to={navLinks[item]}
-                  className="relative px-3 py-2 text-sm font-medium group overflow-hidden"
-                  onClick={() => handleLinkClick(item)}
+                  key={item.name}
+                  to={navLinks[item.name]}
+                  className="relative px-3 py-2 text-sm font-medium group overflow-hidden flex items-center"
+                  onClick={() => handleLinkClick(item.name)}
                 >
+                  {item.icon}
                   <span className="relative z-10 text-white transition-colors duration-300 group-hover:text-amber-600">
-                    {item}
+                    {item.name}
                   </span>
                   <span className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-amber-400 to-yellow-500 transform scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100" />
                   <span className="absolute inset-0 bg-gradient-to-r from-amber-900/20 to-yellow-900/20 transform scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100" />
@@ -127,12 +133,13 @@ export default function Navbar() {
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gradient-to-r from-amber-900/90 via-blue/90 to-blue-900/90 backdrop-blur-lg">
           {navItems.map((item) => (
             <Link
-              key={item}
-              to={navLinks[item]}
-              className="block px-3 py-2 text-base font-medium text-white hover:text-amber-400 transition-colors duration-300"
-              onClick={() => handleLinkClick(item)}
+              key={item.name}
+              to={navLinks[item.name]}
+              className="block px-3 py-2 text-base font-medium text-white hover:text-amber-400 transition-colors duration-300 flex items-center"
+              onClick={() => handleLinkClick(item.name)}
             >
-              {item}
+              {item.icon}
+              {item.name}
             </Link>
           ))}
         </div>

@@ -87,7 +87,7 @@ export default function Hero() {
                 {displayText}
               </span>
             </span>
-            <span className="block text-transparent bg-gradient-to-r from-amber-400 via-blue-500 to-amber-600 bg-clip-text animate-gradient">
+            <span className="block text-transparent font-bold bg-gradient-to-r from-amber-400 via-blue-500 to-amber-600 bg-clip-text text-transparent animate-gradient">
               Brown Eggs
             </span>
           </h1>
@@ -99,7 +99,7 @@ export default function Hero() {
             onClick={scrollToProducts}
             className="group bg-gradient-to-r from-amber-600 via-amber-700 to-yellow-600 hover:from-amber-700 hover:via-yellow-600 hover:to-amber-600 text-white px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 flex items-center gap-2 mx-auto animate-bounce-slow shadow-lg hover:shadow-amber-500/25"
           >
-            Shop Now
+            Order Now
             <ArrowDown className="group-hover:translate-y-1 transition-transform duration-300" />
           </button>
         </div>

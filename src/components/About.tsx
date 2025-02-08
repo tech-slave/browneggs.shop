@@ -3,13 +3,17 @@ import { Egg, Car as Farm, Users, Heart } from 'lucide-react';
 import bes from './bes_nbg.gif';
 export default function About() {
   const sectionsRef = useRef<HTMLDivElement>(null);
-
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add('animate-fade-in');
+          }else {
+            entry.target.classList.remove('animate-fade-in');
           }
         });
       },
@@ -35,11 +39,11 @@ export default function About() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
-          <div className="animate-on-scroll opacity-0">
+          <div className="animate-on-scroll opacity-0 justify-cenyter items-center space-x-4">
             <img
               src={bes}
               alt="Our Farm"
-              className="rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 hover:-translate-y-2"
+              className="w-full h-full max-w-lg max-h-lg rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 hover:-translate-y-2"
             />
             {/* <video
                   src={bes_vid}

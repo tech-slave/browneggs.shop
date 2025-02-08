@@ -85,7 +85,7 @@ export default function Features() {
           }
         });
       },
-      { threshold: 0.1 }
+      { threshold: 0.5 }
     );
 
     const featureElements = featuresRef.current?.querySelectorAll('.feature-card');
