@@ -8,8 +8,13 @@
         var path = window.location.pathname;
         var baseUrl = "/browneggs.shop/";
 
-        // Only redirect if the path does not already start with '/browneggs.shop/'
-        if (!path.startsWith(baseUrl)) {
+        // Remove the baseUrl if it already exists in the path
+        if (path.startsWith(baseUrl)) {
+            path = path.substring(baseUrl.length);
+        }
+
+        // Only redirect if it's not the root path (to avoid redirecting to itself)
+        if (path && path !== '/') {
             var redirectTo = baseUrl + path;
             window.location.replace(redirectTo);
         }
