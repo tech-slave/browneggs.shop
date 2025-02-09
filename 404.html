@@ -6,8 +6,13 @@
     <title>Redirecting...</title>
     <script>
         var path = window.location.pathname;
-        var redirectTo = "/browneggs.shop" + path;
-        window.location.replace(redirectTo);
+        var baseUrl = "/browneggs.shop/";
+
+        // Only redirect if the path does not already start with '/browneggs.shop/'
+        if (!path.startsWith(baseUrl)) {
+            var redirectTo = baseUrl + path;
+            window.location.replace(redirectTo);
+        }
     </script>
 </head>
 <body>
