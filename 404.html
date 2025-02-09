@@ -5,14 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redirecting...</title>
     <script>
-        var path = window.location.pathname;
-        var baseUrl = "/browneggs.shop";  // Note: No trailing slash here
-
-        // Check if we're in the correct environment (GitHub Pages) by checking for '/browneggs.shop'
-        if (!path.startsWith(baseUrl)) {
-            var redirectTo = baseUrl + path;  // Correctly prepend base path
-            window.location.replace(redirectTo);
-        }
+        // Simply redirect to the home page
+        window.location.replace("https://browneggs.shop/");
     </script>
 </head>
 <body>
