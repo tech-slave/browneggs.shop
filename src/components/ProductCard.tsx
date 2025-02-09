@@ -20,21 +20,25 @@ export default function ProductCard({ title, price, image, description }: Produc
           } 
         });
       },
-      { threshold: 0.5 }
+      { threshold: 0.2 }
     );
 
-    const productCards = document.querySelectorAll('.product-card');
-    productCards.forEach((card) => observer.observe(card));
+    const currentCard = productCardRef.current;
+    if (currentCard) {
+      observer.observe(currentCard);
+    }
 
     return () => {
-      productCards.forEach((card) => observer.unobserve(card));
+      if (currentCard) {
+        observer.unobserve(currentCard);
+      }
     };
   }, []);
 
   return (
     <div 
       ref={productCardRef} 
-      className="product-card group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white to-amber-50 dark:from-gray-800 dark:to-gray-700/50 shadow-lg hover:shadow-xl transition-all duration-500 hover:-translate-y-2 animate-float"
+      className="product-card group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white to-amber-50 dark:from-gray-800 dark:to-gray-700/50 shadow-lg hover:shadow-xl transition-all duration-500 hover:-translate-y-2"
     >
       <div className="aspect-square overflow-hidden">
         <img
@@ -60,7 +64,7 @@ export default function ProductCard({ title, price, image, description }: Produc
               const message = `Hi! I'm interested in ordering ${title} - ₹${price}`;
               window.open(`https://wa.me/+919493543214?text=${encodeURIComponent(message)}`, '_blank');
             }}
-            className="relative z-10 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white p-2 rounded-full transition-all duration-300 hover:scale-110"
+            className="relative z-10 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white p-2 rounded-full transition-all duration-300 hover:scale-110 animate-float"
           >
             <ShoppingCart size={20} />
           </button>

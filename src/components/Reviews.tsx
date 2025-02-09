@@ -3,28 +3,28 @@ import { Star } from 'lucide-react';
 
 const reviews = [
   {
-    name: "Priya Sharma",
+    name: "Naga Bhushan",
     rating: 5,
     comment: "The freshest eggs I've ever had! The delivery was quick and the packaging was excellent.",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80"
+    image: "https://media.licdn.com/dms/image/v2/D5603AQESt877MgH7jA/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1698340368866?e=1744848000&v=beta&t=5FbakzLtmKzP2j-2gZYt1EmilGL4Bt938mPrJFXmJz0"
   },
   {
     name: "Rahul Verma",
-    rating: 5,
+    rating: 4,
     comment: "Premium quality eggs at reasonable prices. The subscription service is very convenient.",
     image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80"
   },
   {
-    name: "Anjali Patel",
-    rating: 5,
+    name: "Ajay Kumar",
+    rating: 4,
     comment: "Excellent customer service and consistently high-quality products. Highly recommended!",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80"
+    image: "https://media.licdn.com/dms/image/v2/D5603AQE_ib1NIHaK1g/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1712209489182?e=1744848000&v=beta&t=mA_lC_55_8JVierhIDMMggiM2ppUFbhcSIaU72sQ_k0"
   },
   {
-    name: "Vikram Singh",
+    name: "Uma Mahesh",
     rating: 5,
     comment: "The organic feed really makes a difference. These eggs taste amazing!",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80"
+    image: "https://media.licdn.com/dms/image/v2/D5603AQFZlDZGd22WNw/profile-displayphoto-shrink_400_400/B56ZSwh7RzGsAg-/0/1738128472800?e=1744848000&v=beta&t=ofIgaUZhV8TlaG74YKH0Npwa-ctxyF42bpoPQ49gjHA"
   }
 ];
 
@@ -37,8 +37,6 @@ export default function Reviews() {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add('animate-fade-in');
-          } else {
-            entry.target.classList.remove('animate-fade-in');
           }
         });
       },

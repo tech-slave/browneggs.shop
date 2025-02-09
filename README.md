@@ -1,6 +1,6 @@
 # Brown Eggs Shop
 
-Welcome to the Brown Eggs Shop web application. This project is a modern, responsive web application for an online store that sells premium brown eggs. The application is built using the latest web technologies and provides a seamless user experience.
+Welcome to the [browneggs.shop](https://browneggs.shop) application. This project is a modern, responsive web application for an online store that sells premium brown eggs. The application is built using the latest web technologies and provides a seamless user experience.
 
 ## Table of Contents
 
@@ -82,7 +82,9 @@ This will build the project and deploy the contents of the `dist` directory to t
 
 ## License
 
+## License
+
 This project is licensed under the MIT License. See the LICENSE file for details.
 
-Made with ❤️ by [Brown Eggs Shop](#)
+Made with ❤️ by [browneggs.shop](https://browneggs.shop)
 

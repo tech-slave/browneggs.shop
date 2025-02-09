@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowDown } from 'lucide-react';
-import video from './bes_slow_hd.mp4';
+import video from './bes_can_hd.mp4';
 const adjectives = ['Premium', 'Healthy', 'Farm-Fresh', 'Organic', 'Grade A','Omega-3 enriched'];
 
 export default function Hero() {
