@@ -17,28 +17,24 @@ export default function ProductCard({ title, price, image, description }: Produc
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add('animate-fade-in');
-          } 
+          }
         });
       },
-      { threshold: 0.2 }
+      { threshold: 0.1 } // Trigger when 10% of the element is in view
     );
 
-    const currentCard = productCardRef.current;
-    if (currentCard) {
-      observer.observe(currentCard);
+    // Start observing the product card
+    if (productCardRef.current) {
+      observer.observe(productCardRef.current);
     }
 
-    return () => {
-      if (currentCard) {
-        observer.unobserve(currentCard);
-      }
-    };
+    return () => observer.disconnect();
   }, []);
 
   return (
     <div 
       ref={productCardRef} 
-      className="product-card group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white to-amber-50 dark:from-gray-800 dark:to-gray-700/50 shadow-lg hover:shadow-xl transition-all duration-500 hover:-translate-y-2"
+      className="product-card animate-on-scroll group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white to-amber-50 dark:from-gray-800 dark:to-gray-700/50 shadow-lg hover:shadow-xl transition-all duration-500 hover:-translate-y-2"
     >
       <div className="aspect-square overflow-hidden">
         <img
