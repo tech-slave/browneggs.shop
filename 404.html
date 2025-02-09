@@ -6,16 +6,11 @@
     <title>Redirecting...</title>
     <script>
         var path = window.location.pathname;
-        var baseUrl = "/browneggs.shop/";
+        var baseUrl = "/browneggs.shop";  // Note: No trailing slash here
 
-        // Remove the baseUrl if it already exists in the path
-        if (path.startsWith(baseUrl)) {
-            path = path.substring(baseUrl.length);
-        }
-
-        // Only redirect if it's not the root path (to avoid redirecting to itself)
-        if (path && path !== '/') {
-            var redirectTo = baseUrl + path;
+        // Check if we're in the correct environment (GitHub Pages) by checking for '/browneggs.shop'
+        if (!path.startsWith(baseUrl)) {
+            var redirectTo = baseUrl + path;  // Correctly prepend base path
             window.location.replace(redirectTo);
         }
     </script>
