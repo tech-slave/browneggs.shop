@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Redirecting...</title>
     <script>
-        // Simply redirect to the home page
-        window.location.replace("https://browneggs.shop/");
+      // This is crucial: We handle the URL and force the browser to load the app.
+      // It ensures that routes like `/contact` will load correctly after redirecting to `index.html`.
+      var path = window.location.pathname;  // Get the current URL path
+      // Redirect to index.html with the path appended
+      window.location.replace('/index.html' + path);
     </script>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Redirecting...</h1>
-</body>
+  </body>
 </html>
