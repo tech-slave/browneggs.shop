@@ -7,6 +7,7 @@ import Reviews from './components/Reviews';
 import About from './components/About';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
+import Privacy from './components/Privacy';
 //https://images.unsplash.com/photo-1577619590212-fcb85e9818ef?q=80&w=2970&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D
 const products = [
   {
@@ -73,6 +74,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/privacy" element={<Privacy />} />
           <Route path="*" element={<Navigate to="/" />} /> {/* Catch-all route */}
         </Routes>
         <Footer /> 
