@@ -1,31 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redirecting...</title>
     <script>
-      var path = window.location.pathname;
-
-      // List of valid routes in your app
-      const validRoutes = [
-        '/contact', 
-        '/about', 
-        '/privacy', 
-        '/',  // Include homepage
-        // Add more valid routes here
-      ];
-
-      // If the path is in valid routes, let React Router handle it
-      if (validRoutes.includes(path)) {
-        window.location.replace(path);  // Keep the same path for valid routes
-      } else {
-        // For invalid routes, redirect to homepage
-        window.location.replace('/');  // Redirect to the homepage
-      }
+        // Simply redirect to the home page
+        window.location.replace("https://browneggs.shop/");
     </script>
-  </head>
-  <body>
+</head>
+<body>
     <h1>Redirecting...</h1>
-  </body>
+</body>
 </html>
