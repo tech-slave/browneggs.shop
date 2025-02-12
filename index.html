@@ -11,15 +11,10 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <script>
-      (function() {
-          const redirectPath = sessionStorage.getItem('redirectPath');
-          if (redirectPath) {
-              sessionStorage.removeItem('redirectPath');
-              if (redirectPath !== window.location.pathname) {
-                  window.history.replaceState(null, null, redirectPath);
-              }
-          }
-      })();
-  </script>
+      // Remove any lingering redirect data to prevent loops
+      if (window.location.pathname !== '/404.html') {
+        sessionStorage.removeItem('redirectPath');
+      }
+    </script>
   </body>
 </html>
