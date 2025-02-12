@@ -5,22 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Page Not Found</title>
     <script>
-        // Store the original path in sessionStorage
-        const path = window.location.pathname;
-        sessionStorage.setItem('redirectPath', path);
-
-        // List of valid routes in your app
         const validRoutes = ['/', '/about', '/contact', '/privacy'];
+        const path = window.location.pathname;
         
-        // Check if the current path is valid
-        const isValidRoute = validRoutes.includes(path);
+        // Remove any trailing slashes and normalize the path
+        const normalizedPath = path.endsWith('/') ? path.slice(0, -1) : path;
         
-        // If it's a valid route, preserve it. Otherwise, redirect to home
-        const redirectUrl = isValidRoute 
-            ? `https://browneggs.shop${path}` 
-            : 'https://browneggs.shop/';
-
-        window.location.replace(redirectUrl);
+        // Check if the path is valid or is a direct homepage access
+        if (validRoutes.includes(normalizedPath) || normalizedPath === '/browneggs.shop') {
+            // For valid routes, preserve the path but clean it up
+            const cleanPath = normalizedPath === '/browneggs.shop' ? '/' : normalizedPath;
+            window.location.replace(`https://browneggs.shop${cleanPath}`);
+        } else {
+            // For invalid routes, redirect to home
+            window.location.replace('https://browneggs.shop/');
+        }
     </script>
 </head>
 <body>
