@@ -5,35 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Page Not Found</title>
     <script>
-        const pathname = window.location.pathname;
-        const search = window.location.search;
         const validRoutes = ['/', '/about', '/contact', '/privacy'];
+        const path = window.location.pathname;
         
-        // Clean up the path and handle potential /browneggs.shop prefix
-        let cleanPath = pathname.replace(/\/+$/, '');
-        if (cleanPath.startsWith('/browneggs.shop')) {
-            cleanPath = cleanPath.replace('/browneggs.shop', '');
-        }
+        // Remove any trailing slashes and normalize the path
+        const normalizedPath = path.endsWith('/') ? path.slice(0, -1) : path;
         
-        // Direct navigation without sessionStorage for valid routes
-        if (validRoutes.includes(cleanPath)) {
-            window.location.replace(`https://browneggs.shop${cleanPath}${search}`);
+        // Check if the path is valid or is a direct homepage access
+        if (validRoutes.includes(normalizedPath) || normalizedPath === '/browneggs.shop') {
+            // For valid routes, preserve the path but clean it up
+            const cleanPath = normalizedPath === '/browneggs.shop' ? '/' : normalizedPath;
+            window.location.replace(`https://browneggs.shop${cleanPath}`);
         } else {
-            // Only use sessionStorage for invalid routes to prevent loops
-            if (sessionStorage.getItem('redirected')) {
-                sessionStorage.removeItem('redirected');
-                document.write('<h1>Page Not Found</h1><a href="https://browneggs.shop">Go to Home</a>');
-            } else {
-                sessionStorage.setItem('redirected', 'true');
-                window.location.replace('https://browneggs.shop/');
-            }
+            // For invalid routes, redirect to home
+            window.location.replace('https://browneggs.shop/');
         }
     </script>
 </head>
 <body>
-    <noscript>
-        <h1>Page Not Found</h1>
-        <a href="https://browneggs.shop">Return to Home</a>
-    </noscript>
+    <h1>Redirecting...</h1>
 </body>
 </html>
