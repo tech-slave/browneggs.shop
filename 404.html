@@ -5,16 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Page Not Found</title>
     <script>
-        const segment = 1;
-        const l = window.location;
-        const pathname = l.pathname.split('/').slice(segment).join('/');
-        const searchParams = l.search || '';
-        const redirectUrl = `https://browneggs.shop/${pathname}${searchParams}`;
+        // Store the original path in sessionStorage
+        const path = window.location.pathname;
+        sessionStorage.setItem('redirectPath', path);
+
+        // List of valid routes in your app
+        const validRoutes = ['/', '/about', '/contact', '/privacy'];
         
-        // Only redirect if it's not already at the target URL
-        if (l.href !== redirectUrl) {
-            window.location.replace(redirectUrl);
-        }
+        // Check if the current path is valid
+        const isValidRoute = validRoutes.includes(path);
+        
+        // If it's a valid route, preserve it. Otherwise, redirect to home
+        const redirectUrl = isValidRoute 
+            ? `https://browneggs.shop${path}` 
+            : 'https://browneggs.shop/';
+
+        window.location.replace(redirectUrl);
     </script>
 </head>
 <body>
