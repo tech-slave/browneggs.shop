@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="refresh" content="0; url=/" />
+    <script>
+      // This script will redirect to the correct route after the initial redirect to the home page
+      var path = window.location.pathname;
+      if (path !== "/") {
+        window.location.replace("/#" + path);
+      }
+    </script>
+  </head>
+  <body></body>
+</html>
