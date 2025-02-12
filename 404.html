@@ -5,20 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Page Not Found</title>
     <script>
+        // Store the pathname and search parameters
+        const pathname = window.location.pathname;
+        const search = window.location.search;
+        
+        // Define valid routes
         const validRoutes = ['/', '/about', '/contact', '/privacy'];
-        const path = window.location.pathname;
         
-        // Remove any trailing slashes and normalize the path
-        const normalizedPath = path.endsWith('/') ? path.slice(0, -1) : path;
+        // Clean up the path
+        const cleanPath = pathname.replace(/\/+$/, ''); // Remove trailing slashes
         
-        // Check if the path is valid or is a direct homepage access
-        if (validRoutes.includes(normalizedPath) || normalizedPath === '/browneggs.shop') {
-            // For valid routes, preserve the path but clean it up
-            const cleanPath = normalizedPath === '/browneggs.shop' ? '/' : normalizedPath;
-            window.location.replace(`https://browneggs.shop${cleanPath}`);
+        // Prevent redirect loops
+        if (sessionStorage.getItem('redirected')) {
+            sessionStorage.removeItem('redirected');
+            document.body.innerHTML = '<h1>Page Not Found</h1><a href="https://browneggs.shop">Go to Home</a>';
         } else {
-            // For invalid routes, redirect to home
-            window.location.replace('https://browneggs.shop/');
+            sessionStorage.setItem('redirected', 'true');
+            
+            // Handle routing
+            if (validRoutes.includes(cleanPath)) {
+                window.location.href = `https://browneggs.shop${cleanPath}${search}`;
+            } else {
+                window.location.href = 'https://browneggs.shop/';
+            }
         }
     </script>
 </head>
