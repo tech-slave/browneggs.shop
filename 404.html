@@ -5,8 +5,10 @@
     <script>
       // This script will redirect to the correct route after the initial redirect to the home page
       var path = window.location.pathname;
+      console.log(path);
+      console.log("/" + path);
       if (path !== "/") {
-        window.location.replace("/#" + path);
+        window.location.replace("/" + path);
       }
     </script>
   </head>
