@@ -2,7 +2,7 @@
   "name": "browneggs_web",
   "private": true,
   "version": "1.0.0",
-  "homepage": "https://tech-slave.github.io/browneggs.shop",
+  "homepage": "https://browneggs.shop",
   "type": "module",
   "scripts": {
     "predeploy": "npm run build && cp CNAME dist/ && cp 404.html dist/",
