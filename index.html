@@ -11,11 +11,13 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <script>
-      (function(){
-          let redirect = sessionStorage.redirect;
-          delete sessionStorage.redirect;
-          if (redirect && redirect != location.href) {
-              history.replaceState(null, null, redirect);
+      (function() {
+          const redirectPath = sessionStorage.getItem('redirectPath');
+          if (redirectPath) {
+              sessionStorage.removeItem('redirectPath');
+              if (redirectPath !== window.location.pathname) {
+                  window.history.replaceState(null, null, redirectPath);
+              }
           }
       })();
   </script>
