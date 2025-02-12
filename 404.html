@@ -1,16 +1,15 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="refresh" content="0; url=/" />
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found</title>
     <script>
-      // This script will redirect to the correct route after the initial redirect to the home page
-      var path = window.location.pathname;
-      console.log(path);
-      console.log("/" + path);
-      if (path !== "/") {
-        window.location.replace("browneggs.shop/" + path);
-      }
+        sessionStorage.redirect = location.href;
+        window.location.href = '/browneggs.shop';
     </script>
-  </head>
-  <body></body>
+</head>
+<body>
+    <h1>Redirecting to home page...</h1>
+</body>
 </html>
