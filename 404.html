@@ -3,20 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page Not Found</title>
+    <title>Redirecting...</title>
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const validRoutes = ['/', '/about', '/contact', '/privacy'];
-            const path = window.location.pathname;
-
-            // Remove any trailing slashes and normalize the path
-            const normalizedPath = path.endsWith('/') && path !== '/' ? path.slice(0, -1) : path;
-
-            // If the current path is not valid, redirect to home
-            if (!validRoutes.includes(normalizedPath)) {
-                window.location.replace('https://browneggs.shop/');
-            }
-        });
+        // Simply redirect to the home page
+        window.location.replace("https://browneggs.shop/");
     </script>
 </head>
 <body>
