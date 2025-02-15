@@ -32,31 +32,27 @@ export default function Navbar() {
 
   const navLinks: { [key: string]: string } = {
     Home: '/',
-    Shop: '/#products',
+    Order: '/products',
     About: '/about',
     Contact: '/contact',
   };
 
   const navItems = [
     { name: 'Home', icon: <Home className="w-5 h-5 mr-2" /> },
-    { name: 'Shop', icon: <ShoppingCart className="w-5 h-5 mr-2" /> },
+    { name: 'Order', icon: <ShoppingCart className="w-5 h-5 mr-2" /> },
     { name: 'About', icon: <Info className="w-5 h-5 mr-2" /> },
     { name: 'Contact', icon: <Phone className="w-5 h-5 mr-2" /> },
   ];
 
   const handleLinkClick = (item: string) => {
     setIsOpen(false);
-    if (item === 'Shop') {
-      navigate('/');
-      setTimeout(() => {
-        const productsSection = document.getElementById('products');
-        productsSection?.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
-    } else if (item === 'Home') {
+    if (item === 'Home') {
       navigate('/');
       setTimeout(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }, 100);
+    } else {
+      navigate(navLinks[item]);
     }
   };
 

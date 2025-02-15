@@ -9,6 +9,14 @@ export default {
         'fade-up': 'fade-up 0.8s ease-out forwards',
         'fade-in': 'fade-in 0.8s ease-out forwards',
         'gradient': 'gradient 8s ease infinite',
+        'slideUp': 'slideUp 0.5s ease-in-out',
+        'slideDown': 'slideDown 0.5s ease-in-out',
+      },
+      transitionProperty: {
+        'transform': 'transform',
+      },
+      transitionDuration: {
+        '500': '500ms',
       },
       keyframes: {
         float: {
@@ -26,6 +34,14 @@ export default {
         gradient: {
           '0%, 100%': { backgroundPosition: '0% 50%' },
           '50%': { backgroundPosition: '100% 50%' },
+        },
+        slideUp: {
+          '0%': { transform: 'translateY(100%)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        slideDown: {
+          '0%': { transform: 'translateY(-100%)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
         },
       },
     },
