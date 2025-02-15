@@ -24,6 +24,11 @@ jobs:
 
       - name: Build project
         run: npm run build
+        
+      - name: Configure Git
+        run: |
+            git config --global user.email "github-actions@github.com"
+            git config --global user.name "GitHub Actions"
 
       - name: Copy CNAME and 404
         run: |
