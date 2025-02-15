@@ -22,21 +22,20 @@ export function Login() {
                 setDisplayText(adjectives[nextIndex]);
                 setIsAnimating(false);
             }, 500);
-        }, 3000);
+        }, 2000);
 
         return () => clearInterval(timer);
     }, [displayText]);
 
     return (
-        <div className="h-[calc(100vh-4rem)] mt-20 bg-gradient-to-br from-[#2B86C5] via-[#784BA0] to-[#F76B1C]
- flex flex-col items-center justify-center p-4">
+        <div className="h-[calc(100vh-4rem)] mt-20 bg-gradient-to-br from-[#2B86C5] via-[#784BA0] to-[#F76B1C] flex flex-col items-center justify-center p-4">
             <div className="w-full max-w-md text-center mb-8">
                 <h1 className="text-4xl font-bold text-white mb-2">Farm Fresh Eggs</h1>
                 <p className="text-gray-300 flex items-center justify-center gap-1">
                     Login to access{' '}
                     <span className="inline-block relative w-40 h-6 "> {/* Added fixed width */}
                         <span 
-                            className={`text-transparent font-bold bg-gradient-to-r from-amber-400 to-pink-600 bg-clip-text text-transparent animate-gradient absolute inset-0 flex items-center justify-center transition-all duration-500 ${
+                            className={`text-transparent font-bold bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent animate-gradient absolute inset-0 flex items-center justify-center transition-all duration-500 ${
                                 isAnimating 
                                     ? '-translate-y-full opacity-0' 
                                     : 'translate-y-0 opacity-100'
@@ -44,15 +43,6 @@ export function Login() {
                         >
                             {displayText}
                         </span>
-                        {/* <span 
-                            className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${
-                                isAnimating 
-                                    ? 'translate-y-0 opacity-100' 
-                                    : 'translate-y-full opacity-0'
-                            }`}
-                        >
-                            {nextText}
-                        </span> */}
                     </span>
                     {' '}eggs
                 </p>
