@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, ShoppingCart, Home, Info, Phone, User } from 'lucide-react';
+import { Menu, X, ShoppingCart, Home, Info, Phone, User, List } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import Cart from './Cart';
 import { useCart } from './CartContext';
@@ -39,6 +39,7 @@ export default function Navbar() {
     Order: '/products',
     About: '/about',
     Contact: '/contact',
+    Orders: '/orders', // Add Orders link
   };
 
   const navItems = [
@@ -98,6 +99,20 @@ export default function Navbar() {
                   <span className="absolute inset-0 bg-gradient-to-r from-amber-900/20 to-yellow-900/20 transform scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100" />
                 </Link>
               ))}
+              {user && (
+                <Link
+                  to="/orders"
+                  className="relative px-3 py-2 text-sm font-medium group overflow-hidden flex items-center"
+                  onClick={() => handleLinkClick('Orders')}
+                >
+                  <List className="w-5 h-5 sm:w-6 sm:h-6 mr-3" />
+                  <span className="relative z-10 text-white transition-colors duration-300 group-hover:text-amber-600">
+                    Orders
+                  </span>
+                  <span className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-amber-400 to-yellow-500 transform scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100" />
+                  <span className="absolute inset-0 bg-gradient-to-r from-amber-900/20 to-yellow-900/20 transform scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100" />
+                </Link>
+              )}
             </div>
           </div>
 
@@ -165,6 +180,16 @@ export default function Navbar() {
               {item.name}
             </Link>
           ))}
+          {user && (
+            <Link
+              to="/orders"
+              className="block px-3 py-2 text-sm font-medium text-white hover:text-amber-400 transition-colors duration-300 flex items-center"
+              onClick={() => handleLinkClick('Orders')}
+            >
+              <List className="w-5 h-5 sm:w-6 sm:h-6 mr-3" />
+              Orders
+            </Link>
+          )}
         </div>
       </div>
     </nav>

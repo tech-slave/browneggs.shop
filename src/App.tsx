@@ -7,6 +7,7 @@ import About from './components/About';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import Privacy from './components/Privacy';
+import Orders from './components/orders';
 import { Products } from './pages/Products';
 import { AuthProvider } from './hooks/useAuth';
 import { Login } from './pages/Login';
@@ -52,6 +53,14 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <Profile />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/orders" 
+                  element={
+                    <ProtectedRoute>
+                      <Orders />
                     </ProtectedRoute>
                   } 
                 />

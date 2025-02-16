@@ -4,10 +4,10 @@ import free from "../components/free.jpg"
 const products = [
   {
     id: "free-pack-6", // Add unique IDs for each product
-    title: "Free Premium Brown Eggs - 6 Pack",
+    title: "Free Premium Brown Eggs - 6 Pk",
     price: 0,
     image: free,
-    description: "Farm-fresh premium brown eggs, perfect for your daily needs.",
+    description: "Farm-fresh premium brown eggs, rich in flavor and nutrition.",
     isPromo:true
   },
   {
@@ -15,7 +15,7 @@ const products = [
     title: "Premium Brown Eggs - 6 Pack",
     price: 90,
     image: "https://images.unsplash.com/photo-1617054280194-9eb3deda5325?q=80&w=3087&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    description: "Farm-fresh premium brown eggs, perfect for your daily needs."
+    description: "Farm-fresh premium brown eggs, rich in flavor and nutrition."
   },
   {
     id: "pack-12", // Add unique IDs for each product
