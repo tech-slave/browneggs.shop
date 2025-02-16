@@ -38,7 +38,7 @@ export default function ProductCard({ id, title, price, image, description, isPr
   const handleAddToCart = () => {
     dispatch({
       type: 'ADD_ITEM',
-      payload: { id, title, price, image }
+      payload: { id, title, price, image, quantity: 1  }
     });
   };
 

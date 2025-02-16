@@ -1,46 +1,46 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ProductCard from '../components/ProductCard';
-import free from "../components/free.jpg"
-const products = [
-  {
-    id: "free-pack-6", // Add unique IDs for each product
-    title: "Free Premium Brown Eggs - 6 Pk",
-    price: 0,
-    image: free,
-    description: "Farm-fresh premium brown eggs, rich in flavor and nutrition.",
-    isPromo:true
-  },
-  {
-    id: "pack-6", // Add unique IDs for each product
-    title: "Premium Brown Eggs - 6 Pack",
-    price: 90,
-    image: "https://images.unsplash.com/photo-1617054280194-9eb3deda5325?q=80&w=3087&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    description: "Farm-fresh premium brown eggs, rich in flavor and nutrition."
-  },
-  {
-    id: "pack-12", // Add unique IDs for each product
-    title: "Organic Brown Eggs - 12 Pack",
-    price: 180,
-    image: "https://plus.unsplash.com/premium_photo-1676686126965-cb536e2328c3?q=80&w=3087&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    description: "Organic certified brown eggs from free-range hens."
-  },
-  {
-    id: "pack-6-jumbo", // Add unique IDs for each product
-    title: "Jumbo Brown Eggs - 6 Pack",
-    price: 120,
-    image: "https://images.unsplash.com/photo-1498654077810-12c21d4d6dc3?q=80&w=2970&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    description: "Extra-large brown eggs, perfect for baking and cooking."
-  },
-  {
-    id: "pack-30", // Add unique IDs for each product
-    title: "Premium Brown Eggs - 30 Pack",
-    price: 450,
-    image: "https://images.unsplash.com/photo-1506976785307-8732e854ad03?auto=format&fit=crop&q=80",
-    description: "Bulk pack of premium brown eggs for families and businesses."
-  }
-];
+import { supabase } from '../lib/supabase';
+
+interface Product {
+  id: string;
+  title: string;
+  price: number;
+  image: string;
+  description: string;
+  is_promo?: boolean;
+}
 
 export function Products() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchProducts() {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('id');
+
+      if (error) {
+        console.error('Error fetching products:', error);
+      } else {
+        setProducts(data || []);
+      }
+      setLoading(false);
+    }
+
+    fetchProducts();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="py-24 flex justify-center">
+        <div>Loading products...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="py-24 bg-gradient-to-b from-gray-50 via-amber-50/30 to-gray-50 dark:from-gray-900 dark:via-amber-900/20 dark:to-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -59,7 +59,7 @@ export function Products() {
               key={product.id}
               className="transform transition-all duration-300 animate-fade-in"
             >
-              <ProductCard {...product} />
+              <ProductCard {...product} isPromo={product.is_promo} />
             </div>
           ))}
         </div>

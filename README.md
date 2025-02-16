@@ -88,3 +88,24 @@ This project is licensed under the MIT License. See the LICENSE file for details
 
 Made with ❤️ by [browneggs.shop](https://browneggs.shop)
 
+
+## Supabase Free Tier Limits
+
+| Feature              | Limit |
+|----------------------|-------------------------------|
+| **Projects**        | Up to **2 free projects** per organization |
+| **Database**        | **500 MB** storage (read-only mode if exceeded) |
+| **Backups**         | Not included in the free tier |
+| **File Storage**    | **1 GB** total, **50 MB** per file max |
+| **Data Transfer**   | **2 GB** per month |
+| **Authentication**  | Up to **50,000** Monthly Active Users (MAUs) |
+| **OAuth Providers** | Included |
+| **Multi-Factor Authentication (MFA)** | Not included |
+| **Edge Functions**  | **500,000** invocations per month |
+| **Realtime Features** | **2 million** messages per month, **200** peak connections |
+| **Log Retention**   | **1 day** |
+| **Project Inactivity** | Paused after **1 week** of inactivity |
+
+💡 *Monitor usage in the Supabase Dashboard to avoid disruptions. Upgrade to a Pro plan if needed.*  
+
+
