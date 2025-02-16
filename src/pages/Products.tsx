@@ -1,7 +1,15 @@
 import React from 'react';
 import ProductCard from '../components/ProductCard';
-
+import free from "../components/free.jpg"
 const products = [
+  {
+    id: "free-pack-6", // Add unique IDs for each product
+    title: "Free Premium Brown Eggs - 6 Pack",
+    price: 0,
+    image: free,
+    description: "Farm-fresh premium brown eggs, perfect for your daily needs.",
+    isPromo:true
+  },
   {
     id: "pack-6", // Add unique IDs for each product
     title: "Premium Brown Eggs - 6 Pack",
@@ -45,16 +53,11 @@ export function Products() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {products.map((product, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {products.map((product) => (
             <div 
-              key={product.id} // Use product.id instead of index
-              className="transform hover:scale-105 transition-all duration-300 animate-fade-in" 
-              style={{ 
-                marginTop: index % 2 ? '2rem' : '0',
-                transform: `rotate(${Math.random() * 2 - 1}deg)`,
-                animationDelay: `${index * 200}ms`
-              }}
+              key={product.id}
+              className="transform transition-all duration-300 animate-fade-in"
             >
               <ProductCard {...product} />
             </div>
