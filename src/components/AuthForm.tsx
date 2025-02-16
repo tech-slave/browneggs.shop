@@ -27,7 +27,7 @@ export function AuthForm({ type, redirectTo = '/' }: AuthFormProps) {
           password,
         });
         if (error) throw error;
-        navigate('/login', { 
+        navigate('/profile', { 
           state: { 
             message: 'Account created successfully! Please login to continue.',
             from: redirectTo

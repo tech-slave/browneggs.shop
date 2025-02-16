@@ -1,13 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, ShoppingCart, Sun, Moon, Home, Info, Phone } from 'lucide-react';
+import { Menu, X, ShoppingCart, Sun, Moon, Home, Info, Phone, User } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import logo from './bes.png';
+
+import { supabase } from '../lib/supabase'; 
+import { useAuth } from '../hooks/useAuth';
+import { LogOut } from 'lucide-react'; 
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isDark, setIsDark] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
+  const { user } = useAuth();
   const navigate = useNavigate();
+
+  // logout handler
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      navigate('/login');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -101,11 +117,34 @@ export default function Navbar() {
             <button
               onClick={toggleTheme}
               className="p-2 rounded-full bg-gradient-to-r from-amber-900/20 to-yellow-900/20 hover:from-amber-900/40 hover:to-yellow-900/40 text-white transition-all duration-300 transform hover:scale-110"
+              title="Change Theme"
             >
               {isDark ? <Sun size={20} /> : <Moon size={20} />}
             </button>
+
+            {/* Show the profile button when user is logged in */}
+            {user && (
+              <Link
+                to="/profile"
+                className="p-2 rounded-full bg-gradient-to-r from-amber-900/20 to-yellow-900/20 hover:from-amber-900/40 hover:to-yellow-900/40 text-white transition-all duration-300 transform hover:scale-110 group"
+                title="Profile"
+              >
+                <User size={20} className="group-hover:scale-110 transition-transform duration-300" />
+              </Link>
+            )}
             
-            <button className="relative p-2 rounded-full bg-gradient-to-r from-amber-900/20 to-yellow-900/20 hover:from-amber-900/40 hover:to-yellow-900/40 text-white transition-all duration-300 transform hover:scale-110 group">
+            {/* show the logout button if user is logged in */}
+            {user && (
+              <button
+                onClick={handleLogout}
+                className="p-2 rounded-full bg-gradient-to-r from-red-900/20 to-red-700/20 hover:from-red-900/40 hover:to-red-700/40 text-white transition-all duration-300 transform hover:scale-110 group"
+                title="Logout"
+              >
+                <LogOut size={20} className="group-hover:rotate-180 transition-transform duration-300" />
+              </button>
+            )}
+
+            <button className="relative p-2 rounded-full bg-gradient-to-r from-amber-900/20 to-yellow-900/20 hover:from-amber-900/40 hover:to-yellow-900/40 text-white transition-all duration-300 transform hover:scale-110 group" title="Cart">
               <ShoppingCart size={20} />
               <span className="absolute -top-1 -right-1 bg-gradient-to-r from-amber-600 to-yellow-500 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300">
                 0

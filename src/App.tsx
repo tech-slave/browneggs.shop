@@ -12,6 +12,7 @@ import { AuthProvider } from './hooks/useAuth';
 import { Login } from './pages/Login';
 import { Signup } from './pages/Signup';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { Profile } from './pages/Profile';
 
 function HomePage() {
   return (
@@ -41,6 +42,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <Products />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/profile" 
+                element={
+                  <ProtectedRoute>
+                    <Profile />
                   </ProtectedRoute>
                 } 
               />

@@ -46,7 +46,7 @@ const handler = async (req: Request): Promise<Response> => {
             margin-bottom: 10px;
         }
         p {
-            color: #555;
+            color: #333; /* Changed to dark gray for better contrast */
             font-size: 16px;
             line-height: 1.6;
             margin-bottom: 20px;
@@ -54,8 +54,8 @@ const handler = async (req: Request): Promise<Response> => {
         .button {
             display: inline-block;
             padding: 12px 30px;
-            background-color: #f4a261;
-            color: #fff;
+            background-color:#FF8C00;
+            color: #fff; /* White text for better visibility */
             text-decoration: none;
             font-size: 18px;
             border-radius: 8px;
@@ -64,12 +64,12 @@ const handler = async (req: Request): Promise<Response> => {
             transition: background-color 0.3s ease;
         }
         .button:hover {
-            background-color: #e76f51;
+            background-color: #e07b00; /* Darker amber on hover */
         }
         .footer {
             margin-top: 30px;
             font-size: 14px;
-            color: #888;
+            color: #555; /* Improved contrast */
         }
         .footer a {
             color: #f4a261;
@@ -96,8 +96,7 @@ const handler = async (req: Request): Promise<Response> => {
 <body>
     <div class="container confetti">
         <div class="logo">
-            <!-- Add your logo here -->
-            <img src="https://browneggs.shop/assets/bes-BD7yFRVI.png" alt="BrownEggs.shop Logo" width="120px">
+            <img src="https://browneggs.shop/assets/bes-BD7yFRVI.png" alt="browneggs.shop Logo" width="120px">
         </div>
         <h2>Welcome to browneggs.shop! 🥚</h2>
         <p>We are so <strong>egg-cited</strong> as you are now one step closer to a healthy lifestyle!</p>
