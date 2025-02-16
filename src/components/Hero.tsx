@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowDown } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import video from './bes_can_hd.mp4';
 const adjectives = ['Premium', 'Healthy', 'Farm-Fresh', 'Organic', 'Grade A','Omega-3 enriched'];
 
 export default function Hero() {
+  const navigate = useNavigate();
   const [displayText, setDisplayText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
@@ -42,6 +44,10 @@ export default function Hero() {
     productsSection?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const handleOrderClick = () => {
+    navigate('/products');
+  };
+
   return (
     <div className="relative min-h-screen flex items-center">
       <div className="absolute inset-0 overflow-hidden">
@@ -78,7 +84,7 @@ export default function Hero() {
             delivered straight to your doorstep.
           </p>
           <button 
-            onClick={scrollToProducts}
+            onClick={handleOrderClick}
             className="group bg-gradient-to-r from-amber-600 via-amber-700 to-yellow-600 hover:from-amber-700 hover:via-yellow-600 hover:to-amber-600 text-white px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 flex items-center gap-2 mx-auto animate-bounce-slow shadow-lg hover:shadow-amber-500/25"
           >
             Order Now

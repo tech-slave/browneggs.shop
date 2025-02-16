@@ -5,9 +5,10 @@ import { Lock, Mail } from 'lucide-react';
 
 interface AuthFormProps {
   type: 'login' | 'signup';
+  redirectTo?: string;
 }
 
-export function AuthForm({ type }: AuthFormProps) {
+export function AuthForm({ type, redirectTo = '/' }: AuthFormProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,10 +27,10 @@ export function AuthForm({ type }: AuthFormProps) {
           password,
         });
         if (error) throw error;
-        // Redirect to login with success message
         navigate('/login', { 
           state: { 
-            message: 'Account created successfully! Please login to continue.' 
+            message: 'Account created successfully! Please login to continue.',
+            from: redirectTo
           }
         });
         return;
@@ -39,7 +40,7 @@ export function AuthForm({ type }: AuthFormProps) {
           password,
         });
         if (error) throw error;
-        navigate('/');
+        navigate(redirectTo); // Redirect to the originally requested page
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -53,7 +54,7 @@ export function AuthForm({ type }: AuthFormProps) {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/`
+          redirectTo: `${window.location.origin}${redirectTo}` // Update Google OAuth redirect
         }
       });
       if (error) throw error;
@@ -61,8 +62,6 @@ export function AuthForm({ type }: AuthFormProps) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     }
   };
-
-  // ... rest of your existing JSX code remains the same ...
 
   return (
     <div className="w-full max-w-md p-8 bg-white/10 backdrop-blur-lg rounded-2xl shadow-xl">

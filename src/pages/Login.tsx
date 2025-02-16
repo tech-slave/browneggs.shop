@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { AuthForm } from '../components/AuthForm';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const adjectives = ['Fresh, Local', 'Premium, Grade-A', 'Organic, Healthy', 'Farm-Fresh, Natural'];
 
 export function Login() {
     const location = useLocation();
     const message = location.state?.message;
+    const from = location.state?.from || '/'; // Get the redirect path or default to home
     const [displayText, setDisplayText] = useState(adjectives[0]);
     const [nextText, setNextText] = useState('');
     const [isAnimating, setIsAnimating] = useState(false);
@@ -35,7 +36,7 @@ export function Login() {
                     Login to access{' '}
                     <span className="inline-block relative w-40 h-6 "> {/* Added fixed width */}
                         <span 
-                            className={`text-transparent font-bold bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent animate-gradient absolute inset-0 flex items-center justify-center transition-all duration-500 ${
+                            className={`text-transparent font-bold bg-gradient-to-r from-amber-600 to-amber-600 bg-clip-text text-transparent animate-gradient absolute inset-0 flex items-center justify-center transition-all duration-500 ${
                                 isAnimating 
                                     ? '-translate-y-full opacity-0' 
                                     : 'translate-y-0 opacity-100'
@@ -56,7 +57,7 @@ export function Login() {
           </div>
         )}
         
-        <AuthForm type="login" />
+        <AuthForm type="login" redirectTo={from} />
         
         <p className="mt-8 text-gray-300">
           Don't have an account?{' '}
