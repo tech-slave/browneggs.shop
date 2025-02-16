@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, ShoppingCart, Sun, Moon, Home, Info, Phone, User } from 'lucide-react';
+import { Menu, X, ShoppingCart, Home, Info, Phone, User } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import Cart from './Cart';
+import { useCart } from './CartContext';
 import logo from './bes.png';
-
 import { supabase } from '../lib/supabase'; 
 import { useAuth } from '../hooks/useAuth';
 import { LogOut } from 'lucide-react'; 
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isDark, setIsDark] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const { state } = useCart();
 
-  // logout handler
   const handleLogout = async () => {
     try {
       const { error } = await supabase.auth.signOut();
@@ -33,19 +34,6 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDark]);
-
-  const toggleTheme = () => {
-    setIsDark(!isDark);
-    document.documentElement.classList.toggle('dark');
-  };
-
   const navLinks: { [key: string]: string } = {
     Home: '/',
     Order: '/products',
@@ -54,10 +42,10 @@ export default function Navbar() {
   };
 
   const navItems = [
-    { name: 'Home', icon: <Home className="w-5 h-5 mr-2" /> },
-    { name: 'Order', icon: <ShoppingCart className="w-5 h-5 mr-2" /> },
-    { name: 'About', icon: <Info className="w-5 h-5 mr-2" /> },
-    { name: 'Contact', icon: <Phone className="w-5 h-5 mr-2" /> },
+    { name: 'Home', icon: <Home className="w-5 h-5 sm:w-6 sm:h-6 mr-3" /> },
+    { name: 'Order', icon: <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6 mr-3" /> },
+    { name: 'About', icon: <Info className="w-5 h-5 sm:w-6 sm:h-6 mr-3" /> },
+    { name: 'Contact', icon: <Phone className="w-5 h-5 sm:w-6 sm:h-6 mr-3" /> },
   ];
 
   const handleLinkClick = (item: string) => {
@@ -80,14 +68,14 @@ export default function Navbar() {
           : 'bg-gradient-to-r from-black/20 via-amber-900/20 to-black/20 backdrop-blur-sm'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+        <div className="flex items-center justify-between h-14 sm:h-20">
           <div className="flex items-center">
             <Link to="/" onClick={() => handleLinkClick('Home')}>
-              <img src={logo} alt="Logo" className="h-10 w-10 mr-2" />
+              <img src={logo} alt="Logo" className="h-8 w-8 sm:h-10 sm:w-10 mr-2" />
             </Link>
             <Link to="/" onClick={() => handleLinkClick('Home')}>
-              <span className="text-2xl font-bold bg-gradient-to-r from-amber-400 via-blue-500 to-amber-600 bg-clip-text text-transparent animate-gradient">
+              <span className="text-base sm:text-2xl font-bold bg-gradient-to-r from-amber-400 via-blue-500 to-amber-600 bg-clip-text text-transparent animate-gradient">
                 browneggs.shop
               </span>
             </Link>
@@ -113,50 +101,50 @@ export default function Navbar() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-full bg-gradient-to-r from-amber-900/20 to-yellow-900/20 hover:from-amber-900/40 hover:to-yellow-900/40 text-white transition-all duration-300 transform hover:scale-110"
-              title="Change Theme"
-            >
-              {isDark ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
-
-            {/* Show the profile button when user is logged in */}
+          <div className="flex items-center gap-3 sm:gap-4">
             {user && (
               <Link
                 to="/profile"
-                className="p-2 rounded-full bg-gradient-to-r from-amber-900/20 to-yellow-900/20 hover:from-amber-900/40 hover:to-yellow-900/40 text-white transition-all duration-300 transform hover:scale-110 group"
+                className="p-2 sm:p-2.5 rounded-full bg-gradient-to-r from-amber-900/20 to-yellow-900/20 hover:from-amber-900/40 hover:to-yellow-900/40 text-white transition-all duration-300 transform hover:scale-110 group"
                 title="Profile"
               >
-                <User size={20} className="group-hover:scale-110 transition-transform duration-300" />
+                <User size={20} className="sm:w-5 sm:h-5 group-hover:scale-110 transition-transform duration-300" />
               </Link>
             )}
             
-            {/* show the logout button if user is logged in */}
             {user && (
               <button
                 onClick={handleLogout}
-                className="p-2 rounded-full bg-gradient-to-r from-red-900/20 to-red-700/20 hover:from-red-900/40 hover:to-red-700/40 text-white transition-all duration-300 transform hover:scale-110 group"
+                className="p-2 sm:p-2.5 rounded-full bg-gradient-to-r from-red-900/20 to-red-700/20 hover:from-red-900/40 hover:to-red-700/40 text-white transition-all duration-300 transform hover:scale-110 group"
                 title="Logout"
               >
-                <LogOut size={20} className="group-hover:rotate-180 transition-transform duration-300" />
+                <LogOut size={20} className="sm:w-5 sm:h-5 group-hover:rotate-180 transition-transform duration-300" />
               </button>
             )}
 
-            <button className="relative p-2 rounded-full bg-gradient-to-r from-amber-900/20 to-yellow-900/20 hover:from-amber-900/40 hover:to-yellow-900/40 text-white transition-all duration-300 transform hover:scale-110 group" title="Cart">
-              <ShoppingCart size={20} />
-              <span className="absolute -top-1 -right-1 bg-gradient-to-r from-amber-600 to-yellow-500 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300">
-                0
-              </span>
+            <button 
+              onClick={() => setIsCartOpen(true)}
+              className="relative p-2 sm:p-2.5 rounded-full bg-gradient-to-r from-amber-900/20 to-yellow-900/20 hover:from-amber-900/40 hover:to-yellow-900/40 text-white transition-all duration-300 transform hover:scale-110 group" 
+              title="Cart"
+            >
+              <ShoppingCart size={20} className="sm:w-5 sm:h-5" />
+              {state.items.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-amber-600 to-yellow-500 text-white w-5 h-5 sm:w-6 sm:h-6 rounded-full text-xs flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300">
+                  {state.items.reduce((total, item) => total + item.quantity, 0)}
+                </span>
+              )}
             </button>
-
+            <Cart isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
             <div className="md:hidden">
               <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="p-2 rounded-full bg-gradient-to-r from-amber-900/20 to-yellow-900/20 hover:from-amber-900/40 hover:to-yellow-900/40 text-white transition-all duration-300"
+                className="p-2 sm:p-2.5 rounded-full bg-gradient-to-r from-amber-900/20 to-yellow-900/20 hover:from-amber-900/40 hover:to-yellow-900/40 text-white transition-all duration-300 mr-2"
               >
-                {isOpen ? <X size={20} /> : <Menu size={20} />}
+                {isOpen ? (
+                  <X size={20} className="sm:w-5 sm:h-5" />
+                ) : (
+                  <Menu size={20} className="sm:w-5 sm:h-5" />
+                )}
               </button>
             </div>
           </div>
@@ -165,12 +153,12 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       <div className={`md:hidden transition-all duration-500 ${isOpen ? 'max-h-64' : 'max-h-0'} overflow-hidden`}>
-        <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gradient-to-r from-amber-900/90 via-blue/90 to-blue-900/90 backdrop-blur-lg">
+        <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gradient-to-r from-amber-900/90 via-black/90 to-amber-900/90 backdrop-blur-lg">
           {navItems.map((item) => (
             <Link
               key={item.name}
               to={navLinks[item.name]}
-              className="block px-3 py-2 text-base font-medium text-white hover:text-amber-400 transition-colors duration-300 flex items-center"
+              className="block px-3 py-2 text-sm font-medium text-white hover:text-amber-400 transition-colors duration-300 flex items-center"
               onClick={() => handleLinkClick(item.name)}
             >
               {item.icon}

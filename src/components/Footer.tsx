@@ -1,10 +1,24 @@
-import React from 'react';
+import React,{useState,useEffect} from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Instagram, Phone, Mail, Home, Info, Phone as PhoneIcon } from 'lucide-react';
+import { Facebook, Instagram, Phone, Mail, Home, Info, Phone as PhoneIcon,Sun, Moon } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const [isDark, setIsDark] = useState(true);
+
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDark]);
+
+  const toggleTheme = () => {
+    setIsDark(!isDark);
+    document.documentElement.classList.toggle('dark');
+  };
 
   return (
     <footer className="bg-gradient-to-b from-grey-900 to-amber-800 text-white py-7">
@@ -51,6 +65,16 @@ export default function Footer() {
               <a href="https://www.facebook.com/profile.php?id=61571716144145" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-400 transition-colors duration-300">
                 <Facebook size={24} />
               </a>
+              <button
+                onClick={toggleTheme}
+                className="p-1 rounded-full hover:bg-amber-700/20 text-white transition-all duration-300 transform hover:scale-110"
+                title="Toggle Theme"
+              >
+                {isDark ? 
+                  <Sun size={24} className="text-yellow-500 hover:text-yellow-400" /> : 
+                  <Moon size={24} className="text-blue-400 hover:text-blue-300" />
+                }
+              </button>
             </div>
           </div>
 

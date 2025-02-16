@@ -3,24 +3,28 @@ import ProductCard from '../components/ProductCard';
 
 const products = [
   {
+    id: "pack-6", // Add unique IDs for each product
     title: "Premium Brown Eggs - 6 Pack",
     price: 90,
     image: "https://images.unsplash.com/photo-1617054280194-9eb3deda5325?q=80&w=3087&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     description: "Farm-fresh premium brown eggs, perfect for your daily needs."
   },
   {
+    id: "pack-12", // Add unique IDs for each product
     title: "Organic Brown Eggs - 12 Pack",
     price: 180,
     image: "https://plus.unsplash.com/premium_photo-1676686126965-cb536e2328c3?q=80&w=3087&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     description: "Organic certified brown eggs from free-range hens."
   },
   {
+    id: "pack-6-jumbo", // Add unique IDs for each product
     title: "Jumbo Brown Eggs - 6 Pack",
     price: 120,
     image: "https://images.unsplash.com/photo-1498654077810-12c21d4d6dc3?q=80&w=2970&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     description: "Extra-large brown eggs, perfect for baking and cooking."
   },
   {
+    id: "pack-30", // Add unique IDs for each product
     title: "Premium Brown Eggs - 30 Pack",
     price: 450,
     image: "https://images.unsplash.com/photo-1506976785307-8732e854ad03?auto=format&fit=crop&q=80",
@@ -44,7 +48,7 @@ export function Products() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {products.map((product, index) => (
             <div 
-              key={index} 
+              key={product.id} // Use product.id instead of index
               className="transform hover:scale-105 transition-all duration-300 animate-fade-in" 
               style={{ 
                 marginTop: index % 2 ? '2rem' : '0',
