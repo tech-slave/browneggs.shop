@@ -42,7 +42,7 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
   const handlePaymentConfirmation = async () => {
     try {
       setIsPaid(true);
-  
+      console.log('Starting payment confirmation...'); // Debug log
       if (!user) {
         throw new Error('User not authenticated');
       }
@@ -76,6 +76,34 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
       });
   
       await Promise.all(orderItemsPromises);
+
+    // Send order confirmation email
+    console.log('Invoking edge function with:', { // Debug log
+        order: orderData,
+        email: user.email,
+        items: state.items
+      });
+      console.log('Sending confirmation email...'); // Debug log
+      const { data: emailData, error: emailError } = await supabase.functions.invoke(
+        'orderconfirmation',
+        {
+          body: {
+            order: orderData,
+            email: user.email,
+            items: state.items.map(item => ({
+              product_name: item.title,
+              quantity: item.quantity,
+              price: item.price
+            }))
+          }
+        }
+      );
+  
+      if (emailError) {
+        console.error('Error sending confirmation email:', emailError);
+      } else {
+        console.log('Email function response:', emailData); // Debug log
+      }
   
       // Clear cart and redirect after successful order creation
       setTimeout(() => {
