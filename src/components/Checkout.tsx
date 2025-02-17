@@ -42,7 +42,6 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
   const handlePaymentConfirmation = async () => {
     try {
       setIsPaid(true);
-      console.log('Starting payment confirmation...'); // Debug log
       if (!user) {
         throw new Error('User not authenticated');
       }
@@ -105,12 +104,18 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
         console.log('Email function response:', emailData); // Debug log
       }
   
-      // Clear cart and redirect after successful order creation
+      // First clear the cart
+    dispatch({ type: 'CLEAR_CART' });
+    
+    // Use a longer timeout and ensure navigation happens before closing
+    setTimeout(() => {
+      // Navigate first
+      navigate('/orders', { state: { fromCheckout: true } });
+      // Close after a small delay to ensure navigation completes
       setTimeout(() => {
-        dispatch({ type: 'CLEAR_CART' });
         onClose();
-        navigate('/orders', { state: { fromCheckout: true } });
-      }, 1000);
+      }, 100);
+    }, 2000); // Increased to 2 seconds
   
     } catch (error) {
       console.error('Error creating order:', error);
@@ -205,7 +210,7 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
                 {isPaid ? (
                 <>
                     <Check className="w-4 h-4" />
-                    Confirmed
+                    Please wait...
                 </>
                 ) : (
                 <>
