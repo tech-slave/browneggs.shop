@@ -1,6 +1,7 @@
-import React from 'react';
+import React,{useState} from 'react';
 import { X, Plus, Minus, ShoppingBag } from 'lucide-react';
 import { useCart } from './CartContext';
+import CheckoutPage from './Checkout';
 
 interface CartProps {
   isOpen: boolean;
@@ -21,18 +22,10 @@ export default function Cart({ isOpen, onClose }: CartProps) {
     }
   };
 
+  const [showCheckout, setShowCheckout] = useState(false);
+
   const handleCheckout = () => {
-    const message = state.items
-      .map(item => `${item.quantity}x ${item.title} - ₹${item.price * item.quantity}`)
-      .join('\n');
-    const total = `Total: ₹${state.total}`;
-    
-    window.open(
-      `https://wa.me/+919493543214?text=${encodeURIComponent(`Order Summary:\n${message}\n\n${total}`)}`,
-      '_blank'
-    );
-    dispatch({ type: 'CLEAR_CART' });
-    onClose();
+    setShowCheckout(true);
   };
 
   return (
@@ -123,6 +116,17 @@ export default function Cart({ isOpen, onClose }: CartProps) {
           )}
         </div>
       </div>
+
+      // Add this before the final closing div in the return statement
+      {showCheckout && (
+        <CheckoutPage
+          onClose={() => {
+            setShowCheckout(false);
+            onClose();
+          }}
+        />
+      )}
+
     </div>
   );
 }

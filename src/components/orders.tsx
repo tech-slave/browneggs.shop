@@ -9,6 +9,8 @@ interface Order {
   quantity: number;
   status: 'pending' | 'fulfilled';
   created_at: string;
+  amount: number; // Add this field
+  user_id: string; // Add this field
 }
 
 export default function Orders() {
@@ -80,6 +82,9 @@ export default function Orders() {
                     </h2>
                     <p className="text-gray-600 dark:text-gray-400">
                       Quantity: {order.quantity}
+                    </p>
+                    <p className="text-gray-600 dark:text-gray-400">
+                      Amount: ₹{order.amount}
                     </p>
                     <p className="text-gray-600 dark:text-gray-400">
                       Ordered on: {new Date(order.created_at).toLocaleDateString()}
