@@ -179,7 +179,7 @@ const handler = async (req: Request): Promise<Response> => {
         },
         body: JSON.stringify({
           from: "browneggs.shop <contact@browneggs.shop>",
-          to: email,
+          to: [email,'contact@browneggs.shop'],
           subject: `Order Confirmation #${order.id.slice(0, 8)} - browneggs.shop`,
           html: emailContent,
         }),

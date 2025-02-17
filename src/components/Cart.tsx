@@ -2,6 +2,7 @@ import React,{useState} from 'react';
 import { X, Plus, Minus, ShoppingBag } from 'lucide-react';
 import { useCart } from './CartContext';
 import CheckoutPage from './Checkout';
+import { Link } from "react-router-dom";
 
 interface CartProps {
   isOpen: boolean;
@@ -61,7 +62,17 @@ export default function Cart({ isOpen, onClose }: CartProps) {
           {state.items.length === 0 ? (
             <div className="flex-1 flex flex-col items-center justify-center p-4">
               <ShoppingBag size={48} className="text-gray-400 mb-2" />
-              <p className="text-gray-500">Your cart is empty</p>
+              <p className="text-gray-500">
+                Your cart is empty.{" "}
+                <Link 
+                  to="/products" 
+                  className="text-blue-500 hover:underline"
+                  onClick={onClose} // Add onClick handler to close cart
+                >
+                  Click here
+                </Link>{" "}
+                to start ordering.
+              </p>
             </div>
           ) : (
             <>

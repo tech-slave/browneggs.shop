@@ -16,6 +16,24 @@ export default function Navbar() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { state } = useCart();
 
+  const navLinks: { [key: string]: string } = {
+    Home: '/',
+    Order: '/products',
+    About: '/about',
+    Contact: '/contact',
+    Orders: '/orders',
+    Profile: '/profile'
+  };
+
+  const navItems = [
+    { name: 'Home', icon: <Home className="w-5 h-5 sm:w-6 sm:h-6 mr-3" /> },
+    { name: 'Order', icon: <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6 mr-3" /> },
+    { name: 'Orders', icon: <List className="w-5 h-5 sm:w-6 sm:h-6 mr-3" /> },
+    { name: 'Profile', icon: <User className="w-5 h-5 sm:w-6 sm:h-6 mr-3" /> },
+    { name: 'About', icon: <Info className="w-5 h-5 sm:w-6 sm:h-6 mr-3" /> },
+    { name: 'Contact', icon: <Phone className="w-5 h-5 sm:w-6 sm:h-6 mr-3" /> }
+  ];
+
   const handleLogout = async () => {
     try {
       const { error } = await supabase.auth.signOut();
@@ -33,21 +51,6 @@ export default function Navbar() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const navLinks: { [key: string]: string } = {
-    Home: '/',
-    Order: '/products',
-    About: '/about',
-    Contact: '/contact',
-    Orders: '/orders', // Add Orders link
-  };
-
-  const navItems = [
-    { name: 'Home', icon: <Home className="w-5 h-5 sm:w-6 sm:h-6 mr-3" /> },
-    { name: 'Order', icon: <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6 mr-3" /> },
-    { name: 'About', icon: <Info className="w-5 h-5 sm:w-6 sm:h-6 mr-3" /> },
-    { name: 'Contact', icon: <Phone className="w-5 h-5 sm:w-6 sm:h-6 mr-3" /> },
-  ];
 
   const handleLinkClick = (item: string) => {
     setIsOpen(false);
@@ -99,34 +102,10 @@ export default function Navbar() {
                   <span className="absolute inset-0 bg-gradient-to-r from-amber-900/20 to-yellow-900/20 transform scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100" />
                 </Link>
               ))}
-              {user && (
-                <Link
-                  to="/orders"
-                  className="relative px-3 py-2 text-sm font-medium group overflow-hidden flex items-center"
-                  onClick={() => handleLinkClick('Orders')}
-                >
-                  <List className="w-5 h-5 sm:w-6 sm:h-6 mr-3" />
-                  <span className="relative z-10 text-white transition-colors duration-300 group-hover:text-amber-600">
-                    Orders
-                  </span>
-                  <span className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-amber-400 to-yellow-500 transform scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100" />
-                  <span className="absolute inset-0 bg-gradient-to-r from-amber-900/20 to-yellow-900/20 transform scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100" />
-                </Link>
-              )}
             </div>
           </div>
 
           <div className="flex items-center gap-3 sm:gap-4">
-            {user && (
-              <Link
-                to="/profile"
-                className="p-2 sm:p-2.5 rounded-full bg-gradient-to-r from-amber-900/20 to-yellow-900/20 hover:from-amber-900/40 hover:to-yellow-900/40 text-white transition-all duration-300 transform hover:scale-110 group"
-                title="Profile"
-              >
-                <User size={20} className="sm:w-5 sm:h-5 group-hover:scale-110 transition-transform duration-300" />
-              </Link>
-            )}
-            
             {user && (
               <button
                 onClick={handleLogout}
@@ -136,6 +115,14 @@ export default function Navbar() {
                 <LogOut size={20} className="sm:w-5 sm:h-5 group-hover:rotate-180 transition-transform duration-300" />
               </button>
             )}
+
+            <Link
+                to="/orders"
+                className="p-2 sm:p-2.5 rounded-full bg-gradient-to-r from-amber-900/20 to-yellow-900/20 hover:from-amber-900/40 hover:to-yellow-900/40 text-white transition-all duration-300 transform hover:scale-110 group"
+                title="Orders"
+              >
+                <List size={20} className="sm:w-5 sm:h-5" />
+              </Link>
 
             <button 
               onClick={() => setIsCartOpen(true)}
@@ -150,6 +137,7 @@ export default function Navbar() {
               )}
             </button>
             <Cart isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+
             <div className="md:hidden">
               <button
                 onClick={() => setIsOpen(!isOpen)}
@@ -180,16 +168,6 @@ export default function Navbar() {
               {item.name}
             </Link>
           ))}
-          {user && (
-            <Link
-              to="/orders"
-              className="block px-3 py-2 text-sm font-medium text-white hover:text-amber-400 transition-colors duration-300 flex items-center"
-              onClick={() => handleLinkClick('Orders')}
-            >
-              <List className="w-5 h-5 sm:w-6 sm:h-6 mr-3" />
-              Orders
-            </Link>
-          )}
         </div>
       </div>
     </nav>

@@ -5,7 +5,7 @@ import { ShoppingCart, CheckCircle, Clock, ChevronDown, ChevronUp, MessageCircle
 import { FaWhatsapp } from 'react-icons/fa';
 import { useConfetti } from './Confetti';
 import { useLocation } from 'react-router-dom';
-
+import { Link } from "react-router-dom";
 interface OrderItem {
   id: string;
   order_id: string;
@@ -93,7 +93,14 @@ export default function Orders() {
             </div>
           ) : orders.length === 0 ? (
             <div className="text-center text-gray-600 dark:text-gray-300">
-              No orders found.
+              No orders found.{" "}
+              <Link 
+                to="/products" 
+                className="text-blue-500 hover:underline"
+              >
+                Click here
+              </Link>{" "}
+              to start ordering.
             </div>
           ) : (
             <div className="space-y-4">
