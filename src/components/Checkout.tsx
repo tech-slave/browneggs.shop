@@ -25,9 +25,6 @@ const retryOperation = async (operation: () => Promise<any>, maxRetries = MAX_RE
   }
 };
 
-const isMobileBrowser = () => {
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-};
 
 const getErrorMessage = (error: any): string => {
   if (!navigator.onLine) return 'No internet connection. Please check your network.';
@@ -104,12 +101,7 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
       user_id: user.id,
       total_amount: totalAmount,
       status: 'pending',
-      created_at: new Date().toISOString(),
-      metadata: {
-        auth_provider: user.app_metadata?.provider || 'email',
-        user_email: user.email,
-        provider_id: user.app_metadata?.provider_id
-      }
+      created_at: new Date().toISOString()
     };
   
     try {
@@ -169,40 +161,7 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
       throw new Error('Invalid user data: Please login again');
     }
   
-    try {
-      // First try to get existing user
-      const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select('id, email')
-        .eq('id', session.user.id)
-        .single();
-  
-      if (userError || !userData) {
-        // Create new user record if doesn't exist
-        const { error: insertError } = await supabase
-          .from('users')
-          .insert({
-            id: session.user.id,
-            email: session.user.email,
-            created_at: new Date().toISOString(),
-            auth_provider: session.user.app_metadata?.provider || 'oauth',
-            metadata: {
-              provider: session.user.app_metadata?.provider,
-              provider_id: session.user.app_metadata?.provider_id
-            }
-          });
-  
-        if (insertError) {
-          console.error('Failed to create user record:', insertError);
-          throw new Error('User verification failed: Please login again');
-        }
-      }
-      
-      return true;
-    } catch (error) {
-      console.error('Error in verifyAuthStatus:', error);
-      throw new Error('Failed to verify user status');
-    }
+    return true;
   };
 
   const handlePaymentConfirmation = async () => {
