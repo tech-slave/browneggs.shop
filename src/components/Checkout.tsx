@@ -92,18 +92,51 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
 
   
   const createOrder = async (totalAmount: number) => {
+    if (!user?.id || !user?.email) {
+      console.error('Invalid user data:', user);
+      throw new Error('User authentication required');
+    }
+  
+    const session = await supabase.auth.getSession();
+    if (!session.data.session?.access_token) {
+      console.error('No valid session found');
+      throw new Error('Session expired: Please login again');
+    }
+  
+    const orderData = {
+      user_id: user.id,
+      total_amount: totalAmount,
+      status: 'pending',
+      created_at: new Date().toISOString(),
+      metadata: {
+        auth_provider: user.app_metadata?.provider || 'email',
+        user_email: user.email,
+        session_token: session.data.session.access_token
+      }
+    };
+  
     const { data, error } = await supabase
       .from('orders')
-      .insert({
-        user_id: user?.id,
-        total_amount: totalAmount,
-        status: 'pending',
-        created_at: new Date().toISOString()
-      })
+      .insert(orderData)
       .select()
       .single();
-
-    if (error) throw new Error(error.message);
+  
+    if (error) {
+      console.error('Order creation error:', {
+        error,
+        orderData,
+        errorCode: error?.code,
+        details: error?.details,
+        hint: error?.hint
+      });
+  
+      if (error.code === '42501') {
+        throw new Error('Permission denied: Please login again');
+      }
+      
+      throw new Error(`Order creation failed: ${error.message}`);
+    }
+  
     return data;
   };
 
@@ -123,6 +156,34 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
     if (error) throw new Error('Failed to create order items');
   };
 
+  const verifyAuthStatus = async () => {
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    
+    if (sessionError || !session) {
+      console.error('Session error:', sessionError);
+      throw new Error('Authentication error: Please login again');
+    }
+    
+    if (!session.user?.id || !session.user?.email) {
+      console.error('Invalid user data:', session.user);
+      throw new Error('Invalid user data: Please login again');
+    }
+  
+    // Verify user exists in auth.users
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('id, email')
+      .eq('id', session.user.id)
+      .single();
+  
+    if (userError || !userData) {
+      console.error('User verification error:', userError);
+      throw new Error('User verification failed: Please login again');
+    }
+    
+    return true;
+  };
+
   const handlePaymentConfirmation = async () => {
     if (isPaid || isProcessing) return;
 
@@ -132,6 +193,7 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
     }
 
     try {
+      await verifyAuthStatus();
       setIsProcessing(true);
       setLoadingState('processing');
       setError(null);

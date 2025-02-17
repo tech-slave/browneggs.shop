@@ -54,7 +54,7 @@ export function AuthForm({ type, redirectTo = '/' }: AuthFormProps) {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}${redirectTo}` // Update Google OAuth redirect
+          redirectTo: `${window.location.origin}/profile` // Update Google OAuth redirect
         }
       });
       if (error) throw error;
