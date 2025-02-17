@@ -12,7 +12,7 @@ interface CheckoutPageProps {
 
 export default function CheckoutPage({ onClose }: CheckoutPageProps) {
   const { user } = useAuth();
-  const [timeLeft, setTimeLeft] = useState(900);
+  const [timeLeft, setTimeLeft] = useState(600);
   const { state, dispatch } = useCart();
   const navigate = useNavigate();
   const [isPaid, setIsPaid] = useState(false);
@@ -42,37 +42,51 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
   const handlePaymentConfirmation = async () => {
     try {
       setIsPaid(true);
-
+  
       if (!user) {
         throw new Error('User not authenticated');
       }
-
-      // Create orders for each item in the cart
-      const orderPromises = state.items.map(item => {
+  
+      // Calculate total amount
+      const totalAmount = state.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  
+      // Create the main order
+      const { data: orderData, error: orderError } = await supabase
+        .from('orders')
+        .insert({
+          user_id: user.id,
+          total_amount: totalAmount,
+          status: 'pending'
+        })
+        .select()
+        .single();
+  
+      if (orderError) throw orderError;
+  
+      // Create order items
+      const orderItemsPromises = state.items.map(item => {
         return supabase
-          .from('orders')
+          .from('order_items')
           .insert({
-            user_id: user.id,
+            order_id: orderData.id,
             product_name: item.title,
             quantity: item.quantity,
-            status: 'pending',
-            created_at: new Date().toISOString(),
-            amount: item.price * item.quantity,
+            price: item.price
           });
       });
-
-      await Promise.all(orderPromises);
-
+  
+      await Promise.all(orderItemsPromises);
+  
       // Clear cart and redirect after successful order creation
       setTimeout(() => {
         dispatch({ type: 'CLEAR_CART' });
         onClose();
-        navigate('/orders');
-      }, 2000);
-
+        navigate('/orders', { state: { fromCheckout: true } });
+      }, 1000);
+  
     } catch (error) {
       console.error('Error creating order:', error);
-      // You might want to show an error message to the user here
+      // Handle error appropriately
     }
   };
 
@@ -89,7 +103,7 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
             <Clock className="animate-pulse" />
             <span className="text-xl font-bold">{formatTime(timeLeft)}</span>
           </div>
-          <p className="text-gray-600 dark:text-gray-300">
+          <p className="text-gray-600 dark:text-amber-300 blink animate-blink">
             Please complete your payment before the timer expires
           </p>
         </div>
@@ -142,36 +156,36 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-4">
-          <button
-            onClick={onClose}
-            className="flex-1 py-3 px-4 rounded-lg font-semibold border-2 border-red-500 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors flex items-center justify-center gap-2"
-          >
-            <XCircle className="w-5 h-5" />
-            Cancel
-          </button>
-          
-          <button
-            onClick={handlePaymentConfirmation}
-            disabled={isPaid}
-            className={`flex-1 py-3 px-4 rounded-lg font-semibold flex items-center justify-center gap-2 transition-all duration-300 ${
-              isPaid
-                ? 'bg-green-500 text-white cursor-not-allowed'
-                : 'bg-gradient-to-r from-blue-600 to-pink-700 hover:from-amber-700 hover:to-amber-800 text-white'
-            }`}
-          >
-            {isPaid ? (
-              <>
-                <Check className="w-5 h-5" />
-                Confirmed
-              </>
-            ) : (
-              <>
-                <Check className="w-5 h-5" />
-                Click here if paid
-              </>
-            )}
-          </button>
+        <div className="flex gap-4 items-center justify-center">
+            <button
+                onClick={onClose}
+                className="w-32 py-3 px-4 rounded-lg font-semibold border-2 border-red-500 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors flex items-center justify-center gap-2 text-sm whitespace-nowrap"
+            >
+                <XCircle className="w-4 h-4" />
+                Cancel
+            </button>
+            
+            <button
+                onClick={handlePaymentConfirmation}
+                disabled={isPaid}
+                className={`w-48 py-3 px-4 rounded-lg font-semibold flex items-center justify-center gap-2 transition-all duration-300 text-sm whitespace-nowrap ${
+                isPaid
+                    ? 'bg-green-500 text-white cursor-not-allowed'
+                    : 'bg-gradient-to-r from-blue-600 to-pink-700 hover:from-amber-700 hover:to-amber-800 text-white'
+                }`}
+            >
+                {isPaid ? (
+                <>
+                    <Check className="w-4 h-4" />
+                    Confirmed
+                </>
+                ) : (
+                <>
+                    <Check className="w-4 h-4" />
+                    I've Paid thru UPI
+                </>
+                )}
+            </button>
         </div>
       </div>
     </div>
