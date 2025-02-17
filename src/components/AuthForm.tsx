@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { Lock, Mail } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
 
 interface AuthFormProps {
   type: 'login' | 'signup';
@@ -14,6 +15,7 @@ export function AuthForm({ type, redirectTo = '/' }: AuthFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,14 +56,28 @@ export function AuthForm({ type, redirectTo = '/' }: AuthFormProps) {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/profile` // Update Google OAuth redirect
+          redirectTo: `${window.location.origin}${redirectTo}` // Update Google OAuth redirect
         }
       });
       if (error) throw error;
+
+      // Check if the user is logged in after OAuth sign-in
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        navigate('/profile');
+      } else {
+        setError('Failed to log in with Google');
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      navigate('/profile');
+    }
+  }, [user, navigate]);
 
   return (
     <div className="w-full max-w-md p-8 bg-white/10 backdrop-blur-lg rounded-2xl shadow-xl">
