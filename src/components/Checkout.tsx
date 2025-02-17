@@ -2,13 +2,40 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from './CartContext';
 import qrCodeImage from './qr-code.png';
-import { ArrowLeft, Check, Clock, XCircle, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
+import { ArrowLeft, Check, Clock, XCircle, ChevronDown, ChevronUp, Loader2, WifiOff } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 
 interface CheckoutPageProps {
   onClose: () => void;
 }
+
+const TIMEOUT_DURATION = 30000; // 30 seconds
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000; // 1 second
+
+const retryOperation = async (operation: () => Promise<any>, maxRetries = MAX_RETRIES) => {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      return await operation();
+    } catch (error) {
+      if (i === maxRetries - 1) throw error;
+      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * (i + 1)));
+    }
+  }
+};
+
+const isMobileBrowser = () => {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+};
+
+const getErrorMessage = (error: any): string => {
+  if (!navigator.onLine) return 'No internet connection. Please check your network.';
+  if (error.message === 'Request timed out') return 'Network is slow. Please try again.';
+  if (error.message.includes('authentication')) return 'Please login again to continue.';
+  if (error.message.includes('order items')) return 'Error creating order. Please try again.';
+  return 'There was an error processing your order. Please try again.';
+};
 
 export default function CheckoutPage({ onClose }: CheckoutPageProps) {
   const { user } = useAuth();
@@ -19,6 +46,28 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [showAllItems, setShowAllItems] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [loadingState, setLoadingState] = useState<'idle' | 'processing' | 'retrying'>('idle');
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [networkRecoveryAttempts, setNetworkRecoveryAttempts] = useState(0);
+
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOnline(true);
+      if (error && networkRecoveryAttempts < MAX_RETRIES) {
+        setNetworkRecoveryAttempts(prev => prev + 1);
+        handlePaymentConfirmation();
+      }
+    };
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, [error, networkRecoveryAttempts]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -41,106 +90,112 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
+  
+  const createOrder = async (totalAmount: number) => {
+    const { data, error } = await supabase
+      .from('orders')
+      .insert({
+        user_id: user?.id,
+        total_amount: totalAmount,
+        status: 'pending',
+        created_at: new Date().toISOString()
+      })
+      .select()
+      .single();
+
+    if (error) throw new Error(error.message);
+    return data;
+  };
+
+  const createOrderItems = async (orderId: string) => {
+    const orderItems = state.items.map(item => ({
+      order_id: orderId,
+      product_name: item.title,
+      quantity: item.quantity,
+      price: item.price,
+      created_at: new Date().toISOString()
+    }));
+
+    const { error } = await supabase
+      .from('order_items')
+      .insert(orderItems);
+
+    if (error) throw new Error('Failed to create order items');
+  };
+
   const handlePaymentConfirmation = async () => {
-    // Prevent double submission
     if (isPaid || isProcessing) return;
+
+    if (!navigator.onLine) {
+      setError('Please check your internet connection and try again.');
+      return;
+    }
 
     try {
       setIsProcessing(true);
+      setLoadingState('processing');
       setError(null);
-      
+
       if (!user) {
         throw new Error('User not authenticated');
       }
 
-      // Calculate total amount
       const totalAmount = state.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
-      // Create the main order
-      const { data: orderData, error: orderError } = await supabase
-        .from('orders')
-        .insert({
-          user_id: user.id,
-          total_amount: totalAmount,
-          status: 'pending'
-        })
-        .select()
-        .single();
+      // Create order with timeout handling
+      const orderData = await Promise.race([
+        retryOperation(() => createOrder(totalAmount)),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Request timed out')), TIMEOUT_DURATION)
+        )
+      ]);
 
-      if (orderError) throw orderError;
+      setLoadingState('retrying');
 
-      // Create order items with error handling
-      try {
-        await Promise.all(state.items.map(item => 
-          supabase
-            .from('order_items')
-            .insert({
-              order_id: orderData.id,
-              product_name: item.title,
-              quantity: item.quantity,
-              price: item.price
-            })
-        ));
-      } catch (error) {
-        throw new Error('Failed to create order items');
-      }
+      // Create order items with retry
+      await retryOperation(() => createOrderItems(orderData.id));
 
       // Handle email confirmation
       try {
-        const { error: emailError } = await supabase.functions.invoke(
-          'orderconfirmation',
-          {
+        await retryOperation(() =>
+          supabase.functions.invoke('orderconfirmation', {
             body: {
               order: orderData,
               email: user.email,
-              items: state.items.map(item => ({
-                product_name: item.title,
-                quantity: item.quantity,
-                price: item.price
-              }))
+              items: state.items
             }
-          }
+          })
         );
-
-        if (emailError) {
-          console.error('Email sending failed:', emailError);
-        }
       } catch (emailError) {
         console.error('Email service error:', emailError);
       }
 
-      // Set paid status and clear cart
       setIsPaid(true);
       dispatch({ type: 'CLEAR_CART' });
+      setLoadingState('idle');
 
-      // Navigation with retry mechanism
-      let navigationAttempts = 0;
-      const maxAttempts = 3;
-      
-      const attemptNavigation = () => {
+      const navigateToOrders = async () => {
         try {
-          navigate('/orders', { state: { fromCheckout: true } });
-          setTimeout(() => {
-            onClose();
-          }, 200);
-        } catch (navError) {
-          navigationAttempts++;
-          console.error(`Navigation attempt ${navigationAttempts} failed:`, navError);
-          
-          if (navigationAttempts < maxAttempts) {
-            setTimeout(attemptNavigation, 1000);
-          } else {
-            window.location.href = '/orders';
-          }
+          await navigate('/orders', { state: { fromCheckout: true } });
+          setTimeout(onClose, 200);
+        } catch (error) {
+          console.error('Navigation failed:', error);
+          window.location.href = '/orders';
         }
       };
 
-      setTimeout(attemptNavigation, 1500);
+      setTimeout(navigateToOrders, 1500);
 
     } catch (error) {
       console.error('Error in payment confirmation:', error);
-      setError('There was an error processing your order. Please try again.');
+      setError(getErrorMessage(error));
       setIsPaid(false);
+      
+      if (!navigator.onLine && networkRecoveryAttempts < MAX_RETRIES) {
+        setLoadingState('retrying');
+      } else {
+        setLoadingState('idle');
+      }
     } finally {
       setIsProcessing(false);
     }
@@ -165,10 +220,17 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-            {error}
-          </div>
+    <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded flex items-center gap-2">
+      {!isOnline ? <WifiOff className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
+      <div>
+        <p className="font-semibold">Error</p>
+        <p className="text-sm">{error}</p>
+        {loadingState === 'retrying' && (
+          <p className="text-sm mt-1">Retrying... Please wait.</p>
         )}
+      </div>
+    </div>
+  )}
 
         {/* Order Summary */}
         <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 mb-6">
