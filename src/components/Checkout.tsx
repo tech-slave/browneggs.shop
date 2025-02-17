@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from './CartContext';
 import qrCodeImage from './qr-code.png';
-import { ArrowLeft, Check, Clock, XCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, Check, Clock, XCircle, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 
@@ -16,7 +16,9 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
   const { state, dispatch } = useCart();
   const navigate = useNavigate();
   const [isPaid, setIsPaid] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [showAllItems, setShowAllItems] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -40,15 +42,20 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
   };
 
   const handlePaymentConfirmation = async () => {
+    // Prevent double submission
+    if (isPaid || isProcessing) return;
+
     try {
-      setIsPaid(true);
+      setIsProcessing(true);
+      setError(null);
+      
       if (!user) {
         throw new Error('User not authenticated');
       }
-  
+
       // Calculate total amount
       const totalAmount = state.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  
+
       // Create the main order
       const { data: orderData, error: orderError } = await supabase
         .from('orders')
@@ -59,67 +66,83 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
         })
         .select()
         .single();
-  
-      if (orderError) throw orderError;
-  
-      // Create order items
-      const orderItemsPromises = state.items.map(item => {
-        return supabase
-          .from('order_items')
-          .insert({
-            order_id: orderData.id,
-            product_name: item.title,
-            quantity: item.quantity,
-            price: item.price
-          });
-      });
-  
-      await Promise.all(orderItemsPromises);
 
-    // Send order confirmation email
-    console.log('Invoking edge function with:', { // Debug log
-        order: orderData,
-        email: user.email,
-        items: state.items
-      });
-      console.log('Sending confirmation email...'); // Debug log
-      const { data: emailData, error: emailError } = await supabase.functions.invoke(
-        'orderconfirmation',
-        {
-          body: {
-            order: orderData,
-            email: user.email,
-            items: state.items.map(item => ({
+      if (orderError) throw orderError;
+
+      // Create order items with error handling
+      try {
+        await Promise.all(state.items.map(item => 
+          supabase
+            .from('order_items')
+            .insert({
+              order_id: orderData.id,
               product_name: item.title,
               quantity: item.quantity,
               price: item.price
-            }))
+            })
+        ));
+      } catch (error) {
+        throw new Error('Failed to create order items');
+      }
+
+      // Handle email confirmation
+      try {
+        const { error: emailError } = await supabase.functions.invoke(
+          'orderconfirmation',
+          {
+            body: {
+              order: orderData,
+              email: user.email,
+              items: state.items.map(item => ({
+                product_name: item.title,
+                quantity: item.quantity,
+                price: item.price
+              }))
+            }
+          }
+        );
+
+        if (emailError) {
+          console.error('Email sending failed:', emailError);
+        }
+      } catch (emailError) {
+        console.error('Email service error:', emailError);
+      }
+
+      // Set paid status and clear cart
+      setIsPaid(true);
+      dispatch({ type: 'CLEAR_CART' });
+
+      // Navigation with retry mechanism
+      let navigationAttempts = 0;
+      const maxAttempts = 3;
+      
+      const attemptNavigation = () => {
+        try {
+          navigate('/orders', { state: { fromCheckout: true } });
+          setTimeout(() => {
+            onClose();
+          }, 200);
+        } catch (navError) {
+          navigationAttempts++;
+          console.error(`Navigation attempt ${navigationAttempts} failed:`, navError);
+          
+          if (navigationAttempts < maxAttempts) {
+            setTimeout(attemptNavigation, 1000);
+          } else {
+            window.location.href = '/orders';
           }
         }
-      );
-  
-      if (emailError) {
-        console.error('Error sending confirmation email:', emailError);
-      } else {
-        console.log('Email function response:', emailData); // Debug log
-      }
-  
-      // First clear the cart
-    dispatch({ type: 'CLEAR_CART' });
-    
-    // Use a longer timeout and ensure navigation happens before closing
-    setTimeout(() => {
-      // Navigate first
-      navigate('/orders', { state: { fromCheckout: true } });
-      // Close after a small delay to ensure navigation completes
-      setTimeout(() => {
-        onClose();
-      }, 100);
-    }, 2000); // Increased to 2 seconds
-  
+      };
+
+      setTimeout(attemptNavigation, 1500);
+
     } catch (error) {
-      console.error('Error creating order:', error);
-      // Handle error appropriately
+      console.error('Error in payment confirmation:', error);
+      setError('There was an error processing your order. Please try again.');
+      setIsPaid(false);
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -140,6 +163,12 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
             Please complete your payment before the timer expires
           </p>
         </div>
+
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+            {error}
+          </div>
+        )}
 
         {/* Order Summary */}
         <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 mb-6">
@@ -190,35 +219,41 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
 
         {/* Action Buttons */}
         <div className="flex gap-4 items-center justify-center">
-            <button
-                onClick={onClose}
-                className="w-32 py-3 px-4 rounded-lg font-semibold border-2 border-red-500 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors flex items-center justify-center gap-2 text-sm whitespace-nowrap"
-            >
-                <XCircle className="w-4 h-4" />
-                Cancel
-            </button>
-            
-            <button
-                onClick={handlePaymentConfirmation}
-                disabled={isPaid}
-                className={`w-48 py-3 px-4 rounded-lg font-semibold flex items-center justify-center gap-2 transition-all duration-300 text-sm whitespace-nowrap ${
-                isPaid
-                    ? 'bg-green-500 text-white cursor-not-allowed'
-                    : 'bg-gradient-to-r from-blue-600 to-pink-700 hover:from-amber-700 hover:to-amber-800 text-white'
-                }`}
-            >
-                {isPaid ? (
-                <>
-                    <Check className="w-4 h-4" />
-                    Please wait...
-                </>
-                ) : (
-                <>
-                    <Check className="w-4 h-4" />
-                    I've Paid thru UPI
-                </>
-                )}
-            </button>
+          <button
+            onClick={onClose}
+            disabled={isProcessing}
+            className="w-32 py-3 px-4 rounded-lg font-semibold border-2 border-red-500 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors flex items-center justify-center gap-2 text-sm whitespace-nowrap disabled:opacity-50"
+          >
+            <XCircle className="w-4 h-4" />
+            Cancel
+          </button>
+          
+          <button
+            onClick={handlePaymentConfirmation}
+            disabled={isPaid || isProcessing}
+            className={`w-48 py-3 px-4 rounded-lg font-semibold flex items-center justify-center gap-2 transition-all duration-300 text-sm whitespace-nowrap ${
+              isPaid || isProcessing
+                ? 'bg-green-500 text-white cursor-not-allowed'
+                : 'bg-gradient-to-r from-blue-600 to-pink-700 hover:from-amber-700 hover:to-amber-800 text-white'
+            }`}
+          >
+            {isProcessing ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Processing...
+              </>
+            ) : isPaid ? (
+              <>
+                <Check className="w-4 h-4" />
+                Order Confirmed!
+              </>
+            ) : (
+              <>
+                <Check className="w-4 h-4" />
+                I've Paid thru UPI
+              </>
+            )}
+          </button>
         </div>
       </div>
     </div>
