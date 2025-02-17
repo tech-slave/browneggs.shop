@@ -136,7 +136,7 @@ export function AuthForm({ type, redirectTo = '/' }: AuthFormProps) {
           <span className="bg-gray-900 px-4 text-sm text-gray-400">or</span>
           <div className="border-t border-gray-600 w-full"></div>
         </div>
-
+{/* 
         <button
           type="button"
           onClick={handleGoogleLogin}
@@ -148,7 +148,7 @@ export function AuthForm({ type, redirectTo = '/' }: AuthFormProps) {
             className="w-5 h-5"
           />
           Continue with Google
-        </button>
+        </button> */}
       </form>
     </div>
   );
