@@ -128,7 +128,6 @@ export default function Cart({ isOpen, onClose }: CartProps) {
         </div>
       </div>
 
-      // Add this before the final closing div in the return statement
       {showCheckout && (
         <CheckoutPage
           onClose={() => {

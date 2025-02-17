@@ -97,11 +97,8 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
       throw new Error('User authentication required');
     }
   
-    const session = await supabase.auth.getSession();
-    if (!session.data.session?.access_token) {
-      console.error('No valid session found');
-      throw new Error('Session expired: Please login again');
-    }
+    // Verify session and user existence
+    await verifyAuthStatus();
   
     const orderData = {
       user_id: user.id,
@@ -111,33 +108,36 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
       metadata: {
         auth_provider: user.app_metadata?.provider || 'email',
         user_email: user.email,
-        session_token: session.data.session.access_token
+        provider_id: user.app_metadata?.provider_id
       }
     };
   
-    const { data, error } = await supabase
-      .from('orders')
-      .insert(orderData)
-      .select()
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .insert(orderData)
+        .select()
+        .single();
   
-    if (error) {
-      console.error('Order creation error:', {
-        error,
-        orderData,
-        errorCode: error?.code,
-        details: error?.details,
-        hint: error?.hint
-      });
+      if (error) {
+        console.error('Order creation error:', {
+          error,
+          orderData,
+          user: {
+            id: user.id,
+            provider: user.app_metadata?.provider
+          }
+        });
+        throw error;
+      }
   
+      return data;
+    } catch (error: any) {
       if (error.code === '42501') {
         throw new Error('Permission denied: Please login again');
       }
-      
       throw new Error(`Order creation failed: ${error.message}`);
     }
-  
-    return data;
   };
 
   const createOrderItems = async (orderId: string) => {
@@ -169,19 +169,40 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
       throw new Error('Invalid user data: Please login again');
     }
   
-    // Verify user exists in auth.users
-    const { data: userData, error: userError } = await supabase
-      .from('users')
-      .select('id, email')
-      .eq('id', session.user.id)
-      .single();
+    try {
+      // First try to get existing user
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('id, email')
+        .eq('id', session.user.id)
+        .single();
   
-    if (userError || !userData) {
-      console.error('User verification error:', userError);
-      throw new Error('User verification failed: Please login again');
+      if (userError || !userData) {
+        // Create new user record if doesn't exist
+        const { error: insertError } = await supabase
+          .from('users')
+          .insert({
+            id: session.user.id,
+            email: session.user.email,
+            created_at: new Date().toISOString(),
+            auth_provider: session.user.app_metadata?.provider || 'oauth',
+            metadata: {
+              provider: session.user.app_metadata?.provider,
+              provider_id: session.user.app_metadata?.provider_id
+            }
+          });
+  
+        if (insertError) {
+          console.error('Failed to create user record:', insertError);
+          throw new Error('User verification failed: Please login again');
+        }
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Error in verifyAuthStatus:', error);
+      throw new Error('Failed to verify user status');
     }
-    
-    return true;
   };
 
   const handlePaymentConfirmation = async () => {
