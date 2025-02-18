@@ -15,8 +15,9 @@ export function ResetPasswordForm() {
     setError(null);
   
     try {
+      console.log('Redirecting to:', `${window.location.origin}/#/update-password`);
       const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/#/update-password`,
+        redirectTo: `https://browneggs.shop/#/update-password`,
       });
       
       if (error) throw error;
