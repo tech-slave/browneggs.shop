@@ -126,7 +126,7 @@ const handler = async (req: Request): Promise<Response> => {
             <p><strong>Order Date:</strong> ${formatDate(order.created_at)}</p>
             <p><strong>Status:</strong> 
                 <span class="status-${order.status}">
-                    ${order.status === 'pending' ? 'We are fulfilling your order' : 'Order Fulfilled'}
+                    ${order.status === 'pending' ? 'Your order has been placed successfully, We are currently verifying your payment!' : 'Order Fulfilled'}
                 </span>
             </p>
         </div>

@@ -148,7 +148,7 @@ export default function Orders() {
                       )}
                       <span className="text-gray-600 dark:text-green-400">
                         {order.status === 'pending' 
-                          ? 'We are fulfilling your order'
+                          ? 'We are verifying your payment'
                           : 'Order Fulfilled'}
                       </span>
                     </div>
