@@ -47,17 +47,25 @@ export default function Orders() {
     try {
       if (!user) return;
   
+      // First, check if order_items exist
+      const { data: itemsCheck, error: itemsError } = await supabase
+        .from('order_items')
+        .select('*')
+        .eq('order_id', 'b95e940a-9ae2-41f4-ad65-b7f1c25515d1'); // Use the order ID from your log
+  
+      console.log('Items check:', itemsCheck); // Debug log
+  
       const { data: ordersData, error: ordersError } = await supabase
         .from('orders')
         .select(`
           *,
-          items:order_items(*)
+          items:order_items!order_id(*)
         `)
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
   
       if (ordersError) throw ordersError;
-  
+      console.log('Fetched orders:', ordersData); // Debug log
       setOrders(ordersData);
     } catch (error) {
       console.error('Error fetching orders:', error);
