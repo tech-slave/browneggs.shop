@@ -15,6 +15,10 @@ import { Signup } from './pages/Signup';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Profile } from './pages/Profile';
 import { CartProvider } from './components/CartContext'
+import { ResetPasswordForm } from './components/ResetPassword';
+import { UpdatePasswordForm } from './components/UpdatePassword';
+import { ResetPasswordRoute } from './components/ResetPasswordRoute';
+
 
 function HomePage() {
   return (
@@ -62,6 +66,15 @@ function App() {
                     <ProtectedRoute>
                       <Orders />
                     </ProtectedRoute>
+                  } 
+                />
+                <Route path="/reset-password" element={<ResetPasswordForm />} />
+                <Route 
+                  path="/update-password" 
+                  element={
+                  <ResetPasswordRoute>
+                    <UpdatePasswordForm />
+                  </ResetPasswordRoute>
                   } 
                 />
                 <Route path="/" element={<HomePage />} />

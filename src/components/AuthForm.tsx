@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { Lock, Mail } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
@@ -51,27 +51,27 @@ export function AuthForm({ type, redirectTo = '/' }: AuthFormProps) {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}${redirectTo}` // Update Google OAuth redirect
-        }
-      });
-      if (error) throw error;
+  // const handleGoogleLogin = async () => {
+  //   try {
+  //     const { error } = await supabase.auth.signInWithOAuth({
+  //       provider: 'google',
+  //       options: {
+  //         redirectTo: `${window.location.origin}${redirectTo}` // Update Google OAuth redirect
+  //       }
+  //     });
+  //     if (error) throw error;
 
-      // Check if the user is logged in after OAuth sign-in
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        navigate('/profile');
-      } else {
-        setError('Failed to log in with Google');
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    }
-  };
+  //     // Check if the user is logged in after OAuth sign-in
+  //     const { data: { session } } = await supabase.auth.getSession();
+  //     if (session?.user) {
+  //       navigate('/profile');
+  //     } else {
+  //       setError('Failed to log in with Google');
+  //     }
+  //   } catch (err) {
+  //     setError(err instanceof Error ? err.message : 'An error occurred');
+  //   }
+  // };
 
   useEffect(() => {
     if (user) {
@@ -116,6 +116,17 @@ export function AuthForm({ type, redirectTo = '/' }: AuthFormProps) {
             required
           />
         </div>
+        {/* Reset Password */}
+        {type === 'login' && (
+          <div className="text-right">
+            <Link 
+              to="/reset-password" 
+              className="text-white-900 hover:text-blue-300"
+            >
+              Forgot Password?
+            </Link>
+          </div>
+        )}
 
         {error && (
           <div className="text-red-500 text-sm bg-red-500/10 p-3 rounded-lg">
