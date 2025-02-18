@@ -65,7 +65,7 @@ export default function Footer() {
               <a href="https://www.facebook.com/profile.php?id=61571716144145" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-400 transition-colors duration-300">
                 <Facebook size={24} />
               </a>
-              <button
+              {/* <button
                 onClick={toggleTheme}
                 className="p-1 rounded-full hover:bg-amber-700/20 text-white transition-all duration-300 transform hover:scale-110"
                 title="Toggle Theme"
@@ -74,7 +74,7 @@ export default function Footer() {
                   <Sun size={24} className="text-yellow-500 hover:text-yellow-400" /> : 
                   <Moon size={24} className="text-blue-400 hover:text-blue-300" />
                 }
-              </button>
+              </button> */}
             </div>
           </div>
 
