@@ -18,7 +18,7 @@ export default function Navbar() {
 
   const navLinks: { [key: string]: string } = {
     Home: '/',
-    Order: '/products',
+    Shop: '/products',
     About: '/about',
     Contact: '/contact',
     Orders: '/orders',
@@ -27,7 +27,7 @@ export default function Navbar() {
 
   const navItems = [
     { name: 'Home', icon: <Home className="w-5 h-5 sm:w-6 sm:h-6 mr-3" /> },
-    { name: 'Order', icon: <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6 mr-3" /> },
+    { name: 'Shop', icon: <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6 mr-3" /> },
     { name: 'Orders', icon: <List className="w-5 h-5 sm:w-6 sm:h-6 mr-3" /> },
     { name: 'Profile', icon: <User className="w-5 h-5 sm:w-6 sm:h-6 mr-3" /> },
     { name: 'About', icon: <Info className="w-5 h-5 sm:w-6 sm:h-6 mr-3" /> },
