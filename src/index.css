@@ -39,7 +39,32 @@
   @apply transition-colors duration-200;
 }
 
+@keyframes egg-bounce-bottom {
+  0% {
+    transform: translateY(100%);
+  }
+  80% {
+    transform: translateY(-80vh); /* Move up to center */
+  }
+  100% {
+    transform: translateY(-70vh); /* Move up to center */
+  }
+}
+
+.animate-egg-bounce-bottom {
+  animation: egg-bounce-bottom 1.2s cubic-bezier(0.36, 0, 0.66, 1) forwards; /* Remove infinite and alternate */
+}
+.loading-overlay {
+  animation: fade-in-out 1.5s infinite;
+}
+
 /* Animation classes */
+@keyframes fade-in-out {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
 @keyframes fade-up {
   from {
     opacity: 0;

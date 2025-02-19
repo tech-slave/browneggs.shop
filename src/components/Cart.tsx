@@ -3,6 +3,8 @@ import { X, Plus, Minus, ShoppingBag } from 'lucide-react';
 import { useCart } from './CartContext';
 import CheckoutPage from './Checkout';
 import { Link } from "react-router-dom";
+import { useLoading } from './LoadingContext'; // Add this import at the top
+
 
 interface CartProps {
   isOpen: boolean;
@@ -11,6 +13,16 @@ interface CartProps {
 
 export default function Cart({ isOpen, onClose }: CartProps) {
   const { state, dispatch } = useCart();
+  const [showCheckout, setShowCheckout] = useState(false);
+  const { loading: isLoading, setLoading } = useLoading(); // Destructure loading and rename it to isLoading
+
+  const handleCheckout = async () => {
+    setLoading(true);
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 4500));
+    setLoading(false);
+    setShowCheckout(true);
+  };
 
   const handleUpdateQuantity = (id: string, newQuantity: number) => {
     if (newQuantity === 0) {
@@ -23,11 +35,7 @@ export default function Cart({ isOpen, onClose }: CartProps) {
     }
   };
 
-  const [showCheckout, setShowCheckout] = useState(false);
 
-  const handleCheckout = () => {
-    setShowCheckout(true);
-  };
 
   return (
     <div 
@@ -35,6 +43,7 @@ export default function Cart({ isOpen, onClose }: CartProps) {
         isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
       }`}
     >
+
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
       
       <div 
@@ -111,18 +120,21 @@ export default function Cart({ isOpen, onClose }: CartProps) {
               </div>
 
               {/* Footer */}
-              <div className="flex-none p-4 border-t dark:border-gray-700 bg-white dark:bg-gray-800">
-                <div className="flex justify-between mb-4">
-                  <span className="text-lg font-semibold dark:text-white">Total:</span>
-                  <span className="text-lg font-bold dark:text-white">₹{state.total}</span>
-                </div>
-                <button
-                  onClick={handleCheckout}
-                  className="w-full py-3 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white rounded-lg font-semibold transition-colors"
-                >
-                  Checkout
-                </button>
-              </div>
+      <div className="flex-none p-4 border-t dark:border-gray-700 bg-white dark:bg-gray-800">
+        <div className="flex justify-between mb-4">
+          <span className="text-lg font-semibold dark:text-white">Total:</span>
+          <span className="text-lg font-bold dark:text-white">₹{state.total}</span>
+        </div>
+        <button
+          onClick={handleCheckout}
+          disabled={isLoading}
+          className={`w-full py-3 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white rounded-lg font-semibold transition-colors ${
+            isLoading ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
+        >
+          {isLoading ? 'Processing...' : 'Checkout'}
+        </button>
+      </div>
             </>
           )}
         </div>

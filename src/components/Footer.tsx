@@ -15,10 +15,10 @@ export default function Footer() {
     }
   }, [isDark]);
 
-  const toggleTheme = () => {
-    setIsDark(!isDark);
-    document.documentElement.classList.toggle('dark');
-  };
+  // const toggleTheme = () => {
+  //   setIsDark(!isDark);
+  //   document.documentElement.classList.toggle('dark');
+  // };
 
   return (
     <footer className="bg-gradient-to-b from-grey-900 to-amber-800 text-white py-7">

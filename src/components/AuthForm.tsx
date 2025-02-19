@@ -51,28 +51,6 @@ export function AuthForm({ type, redirectTo = '/' }: AuthFormProps) {
     }
   };
 
-  // const handleGoogleLogin = async () => {
-  //   try {
-  //     const { error } = await supabase.auth.signInWithOAuth({
-  //       provider: 'google',
-  //       options: {
-  //         redirectTo: `${window.location.origin}${redirectTo}` // Update Google OAuth redirect
-  //       }
-  //     });
-  //     if (error) throw error;
-
-  //     // Check if the user is logged in after OAuth sign-in
-  //     const { data: { session } } = await supabase.auth.getSession();
-  //     if (session?.user) {
-  //       navigate('/profile');
-  //     } else {
-  //       setError('Failed to log in with Google');
-  //     }
-  //   } catch (err) {
-  //     setError(err instanceof Error ? err.message : 'An error occurred');
-  //   }
-  // };
-
   useEffect(() => {
     if (user) {
       navigate('/profile');
@@ -147,19 +125,6 @@ export function AuthForm({ type, redirectTo = '/' }: AuthFormProps) {
           <span className="bg-gray-900 px-4 text-sm text-gray-400">or</span>
           <div className="border-t border-gray-600 w-full"></div>
         </div>
-{/* 
-        <button
-          type="button"
-          onClick={handleGoogleLogin}
-          className="w-full py-3 px-4 bg-white text-gray-900 rounded-lg hover:bg-gray-100 transition-colors flex items-center justify-center gap-2"
-        >
-          <img
-            src="https://www.google.com/favicon.ico"
-            alt="Google"
-            className="w-5 h-5"
-          />
-          Continue with Google
-        </button> */}
       </form>
     </div>
   );
