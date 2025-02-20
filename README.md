@@ -45,7 +45,7 @@ To get a local copy up and running, follow these steps:
    git clone https://github.com/your-username/browneggs.shop.git
    cd browneggs.shop
    ```
-2. Install the dependencies:
+2. Install the dependencies::
    ```sh
    npm install
    ```
