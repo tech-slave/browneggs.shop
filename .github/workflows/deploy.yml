@@ -3,9 +3,11 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main # or master, depending on your default branch name
+      - main
+
 permissions:
   contents: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -20,21 +22,27 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
+      - name: Clear npm cache
+        run: npm cache clean --force
+
       - name: Install dependencies
         run: npm ci
+
+      - name: Remove old build
+        run: rm -rf dist
 
       - name: Build project
         run: npm run build
 
       - name: Configure Git
         run: |
-            git config --global user.email "github-actions@github.com"
-            git config --global user.name "GitHub Actions"
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
 
       - name: Copy CNAME and 404
         run: |
-          cp CNAME dist/
-          cp 404.html dist/
+          cp CNAME dist/ || true
+          cp 404.html dist/ || true
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
