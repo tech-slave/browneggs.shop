@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
-import { LoadingSpinner } from './LoadingSpinner';
+import { LoadingSpinner } from '../common/LoadingSpinner';
 
 const LoadingContext = createContext({
   setLoading: (loading: boolean) => {},

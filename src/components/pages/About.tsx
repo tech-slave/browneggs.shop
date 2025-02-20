@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { Egg, Car as Farm, Users, Heart } from 'lucide-react';
-import bes from './bes_nbg.gif';
+import bes from '../../assets/gifs/bes_nbg.gif';
 export default function About() {
   const sectionsRef = useRef<HTMLDivElement>(null);
   useEffect(() => {

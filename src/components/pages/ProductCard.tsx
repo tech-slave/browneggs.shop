@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { ShoppingCart, Plus, Minus } from 'lucide-react';
-import { useCart } from './CartContext'
+import { useCart } from '../context/CartContext'
 
 interface ProductCardProps {
   id: string;

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
-import { useAuth } from '../hooks/useAuth';
+import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../hooks/useAuth';
 import { ShoppingCart, CheckCircle, Clock, ChevronDown, ChevronUp, MessageCircle, Mail } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
-import { useConfetti } from './Confetti';
+import { useConfetti } from '../common/Confetti';
 import { useLocation } from 'react-router-dom';
 import { Link } from "react-router-dom";
 interface OrderItem {

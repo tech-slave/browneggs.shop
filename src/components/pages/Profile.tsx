@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { User, ShoppingCart, Phone, MapPin, Save, Home, Building2, MapPinned } from 'lucide-react';
-import { supabase } from '../lib/supabase';
-import { useAuth } from '../hooks/useAuth';
+import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../hooks/useAuth';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const AVAILABLE_CITIES = ['Hyderabad', 'Bangalore'] as const;

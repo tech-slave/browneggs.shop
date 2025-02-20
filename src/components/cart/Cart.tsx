@@ -1,9 +1,9 @@
 import React,{useState} from 'react';
 import { X, Plus, Minus, ShoppingBag } from 'lucide-react';
-import { useCart } from './CartContext';
+import { useCart } from '../context/CartContext';
 import CheckoutPage from './Checkout';
 import { Link } from "react-router-dom";
-import { useLoading } from './LoadingContext'; // Add this import at the top
+import { useLoading } from '../context/LoadingContext'; // Add this import at the top
 
 
 interface CartProps {

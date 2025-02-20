@@ -1,5 +1,5 @@
 import React from 'react';
-import box from './box.gif';
+import box from '../../assets/gifs/box.gif';
 
 export const LoadingSpinner = () => {
   return (

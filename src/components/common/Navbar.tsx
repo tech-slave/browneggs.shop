@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X, ShoppingCart, Home, Info, Phone, User, List } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import Cart from './Cart';
-import { useCart } from './CartContext';
-import logo from './bes.png';
-import { supabase } from '../lib/supabase'; 
-import { useAuth } from '../hooks/useAuth';
+import Cart from '../cart/Cart';
+import { useCart } from '../context/CartContext';
+//import logo from './bes.png';
+import logo from '../../assets/images/bes.png';
+import { supabase } from '../../lib/supabase'; 
+import { useAuth } from '../../hooks/useAuth';
 import { LogOut } from 'lucide-react'; 
 
 export default function Navbar() {

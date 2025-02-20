@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AuthForm } from '../components/AuthForm';
+import { AuthForm } from './AuthForm';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const adjectives = ['Fresh, Local', 'Premium, Grade-A', 'Organic, Healthy', 'Farm-Fresh, Natural'];

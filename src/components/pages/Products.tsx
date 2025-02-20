@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import ProductCard from '../components/ProductCard';
-import { supabase } from '../lib/supabase';
+import ProductCard from './ProductCard';
+import { supabase } from '../../lib/supabase';
 
 interface Product {
   id: string;

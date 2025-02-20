@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCart } from './CartContext';
-import qrCodeImage from './qr-code.png';
+import { useCart } from '../context/CartContext';
+//import qrCodeImage from './qr-code.png';
 import { ArrowLeft, Check, Clock, XCircle, ChevronDown, ChevronUp, Loader2, WifiOff } from 'lucide-react';
-import { supabase } from '../lib/supabase';
-import { useAuth } from '../hooks/useAuth';
+import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../hooks/useAuth';
+import qrCodeImage from '../../assets/images/qr-code.png';
 
 interface CheckoutPageProps {
   onClose: () => void;

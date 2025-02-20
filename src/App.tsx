@@ -1,24 +1,24 @@
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import Hero from './components/Hero';
-import Features from './components/Features';
-import Reviews from './components/Reviews';
-import About from './components/About';
-import Contact from './components/Contact';
-import Footer from './components/Footer';
-import Privacy from './components/Privacy';
-import Orders from './components/orders';
-import { Products } from './pages/Products';
+import Navbar from './components/common/Navbar';
+import Hero from './components/layout/Hero';
+import Features from './components/layout/Features';
+import Reviews from './components/layout/Reviews';
+import About from './components/pages/About';
+import Contact from './components/pages/Contact';
+import Footer from './components/common/Footer';
+import Privacy from './components/pages/Privacy';
+import Orders from './components/pages/orders';
+import { Products } from './components/pages/Products';
 import { AuthProvider } from './hooks/useAuth';
-import { Login } from './pages/Login';
-import { Signup } from './pages/Signup';
-import { ProtectedRoute } from './components/ProtectedRoute';
-import { Profile } from './pages/Profile';
-import { CartProvider } from './components/CartContext'
-import { ResetPasswordForm } from './components/ResetPassword';
-import { UpdatePasswordForm } from './components/UpdatePassword';
-import { ResetPasswordRoute } from './components/ResetPasswordRoute';
-import { LoadingProvider } from './components/LoadingContext';
+import { Login } from './components/auth/Login';
+import { Signup } from './components/auth/Signup';
+import { ProtectedRoute } from './components/common/ProtectedRoute';
+import { Profile } from './components/pages/Profile';
+import { CartProvider } from './components/context/CartContext'
+import { ResetPasswordForm } from './components/auth/ResetPassword';
+import { UpdatePasswordForm } from './components/auth/UpdatePassword';
+import { ResetPasswordRoute } from './components/auth/ResetPasswordRoute';
+import { LoadingProvider } from './components/context/LoadingContext';
 
 
 function HomePage() {
