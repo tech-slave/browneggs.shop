@@ -23,15 +23,18 @@ export default function Navbar() {
   const navLinks: { [key: string]: string } = {
     Home: '/',
     Shop: '/products',
-    Cart: '/orders',
-    Account: '/profile'
   };
-
+  
   const navItems = [
-    { name: 'Home', icon: <Home className="w-5 h-5 sm:w-6 sm:h-6 mr-2" /> },
-    { name: 'Shop', icon: <Store className="w-5 h-5 sm:w-6 sm:h-6 mr-2" /> },
-    { name: 'Cart', icon: <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6 mr-2" /> }
+    { name: 'Home', icon: <Home className="w-5 h-5 sm:w-6 sm:h-6 text-white" /> },
+    { name: 'Shop', icon: <Store className="w-5 h-5 sm:w-6 sm:h-6 text-white" /> },
+    { 
+      name: 'Cart', 
+      icon: <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6 mr-2 text-white" />,
+      action: () => setIsCartOpen(true)
+    }
   ];
+  const cartItemCount = state.items.reduce((total, item) => total + item.quantity, 0);
 
   const handleLogout = async () => {
     try {
@@ -118,6 +121,7 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
+          {/* Logo section - keep as is */}
           <div className="flex items-center space-x-2 sm:space-x-4">
             <Link to="/" onClick={() => setIsOpen(false)}>
               <img src={logo} alt="Logo" className="h-6 w-6 sm:h-10 sm:w-10" />
@@ -129,22 +133,46 @@ export default function Navbar() {
             </Link>
           </div>
           
+          {/* Desktop Navigation */}
           <div className="hidden md:flex space-x-2 sm:space-x-4 justify-end flex-1">
             {navItems.map((item) => (
-              <Link
-                key={item.name}
-                to={navLinks[item.name]}
-                className="relative px-2 sm:px-3 py-2 text-sm font-medium group overflow-hidden flex items-center"
-                onClick={() => setIsOpen(false)}
-              >
-                {item.icon}
-                <span className="relative z-10 text-gray-900 dark:text-white transition-colors duration-300 group-hover:text-amber-600 hidden md:inline ml-2">
-                  {item.name}
-                </span>
-                <span className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-amber-400 to-yellow-500 transform scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100" />
-                <span className="absolute inset-0 bg-gradient-to-r from-amber-900/20 to-yellow-900/20 transform scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100" />
-              </Link>
+                item.name === 'Cart' ? (
+                  <button
+                    key={item.name}
+                    onClick={item.action}
+                    className="relative px-2 sm:px-3 py-2 text-sm font-medium group overflow-hidden flex items-center"
+                  >
+                    <div className="relative">
+                      {item.icon}
+                      {cartItemCount > 0 && (
+                        <span className="absolute -top-2 -right-2 bg-amber-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                          {cartItemCount}
+                        </span>
+                      )}
+                    </div>
+                    <span className="relative z-10 text-white transition-colors duration-300 group-hover:text-amber-600 hidden md:inline ml-2">
+                      {item.name}
+                    </span>
+                    <span className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-amber-400 to-yellow-500 transform scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100" />
+                    <span className="absolute inset-0 bg-gradient-to-r from-amber-900/20 to-yellow-900/20 transform scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100" />
+                  </button>
+                ) : (
+                <Link
+                  key={item.name}
+                  to={navLinks[item.name]}
+                  className="relative px-2 sm:px-3 py-2 text-sm font-medium group overflow-hidden flex items-center"
+                  onClick={() => setIsOpen(false)}
+                >
+                  {item.icon}
+                  <span className="relative z-10 text-white transition-colors duration-300 group-hover:text-amber-600 hidden md:inline ml-2">
+                    {item.name}
+                  </span>
+                  <span className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-amber-400 to-yellow-500 transform scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100" />
+                  <span className="absolute inset-0 bg-gradient-to-r from-amber-900/20 to-yellow-900/20 transform scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100" />
+                </Link>
+              )
             ))}
+            {/* Account dropdown */}
             <div 
               className="relative"
               onMouseEnter={handleMouseEnter}
@@ -155,7 +183,7 @@ export default function Navbar() {
                 className="relative px-2 sm:px-3 py-2 text-sm font-medium group overflow-hidden flex items-center"
               >
                 <User className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-0" />
-                <span className="relative z-10 text-gray-900 dark:text-white transition-colors duration-300 group-hover:text-amber-600 hidden md:inline ml-2">
+                <span className="relative z-10 text-white transition-colors duration-300 group-hover:text-amber-600 hidden md:inline ml-2">
                   Account
                 </span>
                 {isAccountOpen ? (
@@ -199,16 +227,34 @@ export default function Navbar() {
             </div>
           </div>
 
+          {/* Mobile Navigation */}
           <div className="flex items-center gap-2 sm:gap-3 md:hidden">
             {navItems.map((item) => (
-              <Link
-                key={item.name}
-                to={navLinks[item.name]}
-                className="relative p-2 rounded-full bg-gradient-to-r from-amber-900/20 to-yellow-900/20 hover:from-amber-900/40 hover:to-yellow-900/40 text-white transition-all duration-300 flex items-center justify-center"
-                onClick={() => setIsOpen(false)}
-              >
-                {item.icon}
-              </Link>
+                item.name === 'Cart' ? (
+                  <button
+                    key={item.name}
+                    onClick={item.action}
+                    className="relative p-1.5 rounded-full bg-gradient-to-r from-amber-900/20 to-yellow-900/20 hover:from-amber-900/40 hover:to-yellow-900/40 text-white transition-all duration-300 flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12"
+                  >
+                    <div className="relative">
+                      {item.icon}
+                      {cartItemCount > 0 && (
+                        <span className="absolute -top-2 -right-2 bg-amber-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                          {cartItemCount}
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                ) : (
+                <Link
+                  key={item.name}
+                  to={navLinks[item.name]}
+                  className="relative p-2 rounded-full bg-gradient-to-r from-amber-900/20 to-yellow-900/20 hover:from-amber-900/40 hover:to-yellow-900/40 text-white transition-all duration-300 flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12"
+                  onClick={() => setIsOpen(false)}
+                >
+                  {item.icon}
+                </Link>
+              )
             ))}
             <div className="relative">
               <button
@@ -261,18 +307,32 @@ export default function Navbar() {
       <div className={`md:hidden transition-all duration-500 ${isOpen ? 'max-h-64' : 'max-h-0'} overflow-hidden`}>
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gradient-to-r from-amber-900/90 via-black/90 to-amber-900/90 backdrop-blur-lg">
           {navItems.map((item) => (
-            <Link
-              key={item.name}
-              to={navLinks[item.name]}
-              className="block px-3 py-2 text-sm font-medium text-white hover:text-amber-400 transition-colors duration-300 flex items-center"
-              onClick={() => setIsOpen(false)}
-            >
-              {item.icon}
-              {item.name}
-            </Link>
+            item.name === 'Cart' ? (
+              <button
+                key={item.name}
+                onClick={item.action}
+                className="block w-full px-3 py-2 text-sm font-medium text-white hover:text-amber-400 transition-colors duration-300 flex items-center"
+              >
+                {item.icon}
+                {item.name}
+              </button>
+            ) : (
+              <Link
+                key={item.name}
+                to={navLinks[item.name]}
+                className="block px-3 py-2 text-sm font-medium text-white hover:text-amber-400 transition-colors duration-300 flex items-center"
+                onClick={() => setIsOpen(false)}
+              >
+                {item.icon}
+                {item.name}
+              </Link>
+            )
           ))}
         </div>
       </div>
+
+      {/* Cart Component */}
+      <Cart isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </nav>
   );
 }

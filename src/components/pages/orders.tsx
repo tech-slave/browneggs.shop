@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 interface OrderItem {
   id: string;
   order_id: string;
+  product_id: string; 
   product_name: string;
   quantity: number;
   price: number;

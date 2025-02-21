@@ -1,4 +1,4 @@
-import React,{useState} from 'react';
+import React,{useState,useEffect} from 'react';
 import { X, Plus, Minus, ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import CheckoutPage from './Checkout';
@@ -15,7 +15,26 @@ export default function Cart({ isOpen, onClose }: CartProps) {
   const { state, dispatch } = useCart();
   const [showCheckout, setShowCheckout] = useState(false);
   const { loading: isLoading, setLoading } = useLoading(); // Destructure loading and rename it to isLoading
+  const calculatedTotal = state.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
+  useEffect(() => {
+    // Verify cart total matches calculated total
+    if (Math.abs(calculatedTotal - state.total) > 0.01) {
+      console.error('Cart total mismatch:', {
+        stored: state.total,
+        calculated: calculatedTotal,
+        difference: calculatedTotal - state.total
+      });
+      // Fix the total if there's a mismatch
+      dispatch({
+        type: 'SET_ITEMS',
+        payload: state.items
+      });
+    }
+  }, [state.items, state.total, calculatedTotal, dispatch]);
+
+  // Update price display to show 2 decimal places
+  const formatPrice = (price: number) => `₹${price.toFixed(2)}`;
   const handleCheckout = async () => {
     setLoading(true);
     // Simulate API delay
@@ -123,7 +142,9 @@ export default function Cart({ isOpen, onClose }: CartProps) {
       <div className="flex-none p-4 border-t dark:border-gray-700 bg-white dark:bg-gray-800">
         <div className="flex justify-between mb-4">
           <span className="text-lg font-semibold dark:text-white">Total:</span>
-          <span className="text-lg font-bold dark:text-white">₹{state.total}</span>
+          <span className="text-lg font-bold dark:text-white">
+            {formatPrice(state.total)}
+          </span>
         </div>
         <button
           onClick={handleCheckout}

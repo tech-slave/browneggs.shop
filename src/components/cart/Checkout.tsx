@@ -136,6 +136,7 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
   const createOrderItems = async (orderId: string) => {
     const orderItems = state.items.map(item => ({
       order_id: orderId,
+      product_id: item.id,
       product_name: item.title,
       quantity: item.quantity,
       price: item.price,

@@ -21,7 +21,8 @@ const Privacy = () => {
         <li>Name</li>
         <li>Email address</li>
         <li>Shipping address</li>
-        <li>Payment information (e.g., credit card details)</li>
+        <li>We do not store sensitive payment details directly. Payments are processed through secure third-party services.</li>
+        <li>Cookies: By using our website, you consent to our use of cookies. You can manage cookie preferences through your browser settings.</li>
       </ul>
 
       <p className="mb-4"><strong>Usage Data:</strong> We gather information on how you interact with our website, including:</p>
