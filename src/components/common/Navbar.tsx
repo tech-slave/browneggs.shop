@@ -104,6 +104,10 @@ export default function Navbar() {
     }
   };
 
+  const handleDropdownItemClick = () => {
+    setIsAccountOpen(false);
+  };
+
   return (
     <nav 
       className={`fixed w-full z-50 transition-all duration-500 ${
@@ -170,19 +174,22 @@ export default function Navbar() {
                   <Link
                     to="/orders"
                     className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    onClick={() => setIsAccountOpen(false)}
+                    onClick={handleDropdownItemClick}
                   >
                     Orders
                   </Link>
                   <Link
                     to="/profile"
                     className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    onClick={() => setIsAccountOpen(false)}
+                    onClick={handleDropdownItemClick}
                   >
                     Profile
                   </Link>
                   <button
-                    onClick={handleLogout}
+                    onClick={() => {
+                      handleLogout();
+                      handleDropdownItemClick();
+                    }}
                     className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                   >
                     Sign Out
@@ -223,19 +230,22 @@ export default function Navbar() {
                   <Link
                     to="/orders"
                     className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    onClick={() => setIsAccountOpen(false)}
+                    onClick={handleDropdownItemClick}
                   >
                     Orders
                   </Link>
                   <Link
                     to="/profile"
                     className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    onClick={() => setIsAccountOpen(false)}
+                    onClick={handleDropdownItemClick}
                   >
                     Profile
                   </Link>
                   <button
-                    onClick={handleLogout}
+                    onClick={() => {
+                      handleLogout();
+                      handleDropdownItemClick();
+                    }}
                     className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                   >
                     Sign Out
