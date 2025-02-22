@@ -6,6 +6,7 @@ interface CartItem {
   price: number;
   image: string;
   quantity: number;
+  isPromo?: boolean; 
 }
 
 interface CartState {
@@ -37,31 +38,34 @@ type CartAction =
           total: action.payload.reduce((sum, item) => sum + (item.price * item.quantity), 0),
         };
   
-      case 'ADD_ITEM': {
-        const existingItem = state.items.find(item => item.id === action.payload.id);
-        
-        if (existingItem) {
-          const updatedItems = state.items.map(item =>
-            item.id === action.payload.id
-              ? { ...item, quantity: item.quantity + 1 }
-              : item
-          );
+        case 'ADD_ITEM': {
+          const existingItem = state.items.find(item => item.id === action.payload.id);
           
+          if (existingItem) {
+            // For promo items, don't increase quantity
+            if (action.payload.isPromo) {
+              return state;
+            }
+    
+            const updatedItems = state.items.map(item =>
+              item.id === action.payload.id
+                ? { ...item, quantity: item.quantity + 1 }
+                : item
+            );
+            
+            return {
+              ...state,
+              items: updatedItems,
+              total: state.total + action.payload.price
+            };
+          }
+    
           return {
             ...state,
-            items: updatedItems,
-            // Fix: Add price of one item
+            items: [...state.items, { ...action.payload, quantity: 1 }],
             total: state.total + action.payload.price
           };
         }
-  
-        // Fix: Add price of one new item
-        return {
-          ...state,
-          items: [...state.items, { ...action.payload, quantity: 1 }],
-          total: state.total + action.payload.price
-        };
-      }
   
       case 'REMOVE_ITEM': {
         const itemToRemove = state.items.find(item => item.id === action.payload);
@@ -78,9 +82,10 @@ type CartAction =
       case 'UPDATE_QUANTITY': {
         const item = state.items.find(item => item.id === action.payload.id);
         if (!item) return state;
-        
-        if (action.payload.quantity <= 0) {
-          return cartReducer(state, { type: 'REMOVE_ITEM', payload: action.payload.id });
+  
+        // Prevent increasing quantity for promo items
+        if (item.isPromo && action.payload.quantity > 1) {
+          return state;
         }
   
         // Fix: Calculate price difference based on quantity change

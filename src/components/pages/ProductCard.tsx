@@ -57,22 +57,26 @@ export default function ProductCard({ id, title, price, image, description, isPr
         isPromo,
         alreadyPurchased: purchasedPromoItems.includes(id)
       });
-  
+    
       if (isPromo && hasOrderedPromo) {
         console.log('Blocking promo purchase - already ordered');
         return;
       }
-  
+    
+      // For promo items, force quantity to 1
       dispatch({
         type: 'ADD_ITEM',
-        payload: { id, title, price, image}
+        payload: { id, title, price, image, isPromo }  // Pass isPromo to cart
       });
     };
-
-
+    
     const handleUpdateQuantity = (newQuantity: number) => {
+      // Prevent increasing quantity for promo items
+      if (isPromo && newQuantity > 1) {
+        return;
+      }
+    
       if (newQuantity <= 0) {
-        // Remove item when quantity reaches 0
         dispatch({ type: 'REMOVE_ITEM', payload: id });
       } else {
         dispatch({
@@ -83,15 +87,15 @@ export default function ProductCard({ id, title, price, image, description, isPr
     };
     
 
-  return (
-    <div 
-      ref={productCardRef} 
-      className={`product-card animate-on-scroll group relative overflow-hidden rounded-lg ${
-        isPromo 
-          ? 'bg-gradient-to-br from-amber-500/10 via-blue-500/10 to-blue-500/10 dark:from-amber-400/20 dark:via-blue-600/20 dark:to-pink-400/20 shadow-pink-900/20 hover:shadow-amber-500/30' 
-          : 'bg-gradient-to-br from-white to-amber-50 dark:from-gray-800 dark:to-gray-700/50'
-      } shadow hover:shadow-md transition-all duration-300 hover:-translate-y-1 h-[140px]`}
-    >
+    return (
+      <div 
+        ref={productCardRef} 
+        className={`product-card animate-on-scroll group relative overflow-hidden rounded-lg ${
+          isPromo 
+            ? 'bg-gradient-to-br from-amber-500/10 via-blue-500/10 to-blue-500/10 dark:from-amber-400/20 dark:via-blue-600/20 dark:to-pink-400/20 shadow-pink-900/20 hover:shadow-amber-500/30' 
+            : 'bg-gradient-to-br from-white to-amber-50 dark:from-gray-800 dark:to-gray-700/50'
+        } shadow hover:shadow-md transition-all duration-300 hover:-translate-y-1 h-[140px]`}
+      >
       <div className="flex h-full"> 
         {/* Image section - maintain current width */}
         <div className="relative overflow-hidden min-w-[140px] w-[140px]">
@@ -154,50 +158,52 @@ export default function ProductCard({ id, title, price, image, description, isPr
             </p>
           </div>
           
-            <div className="flex items-center justify-between mt-1">
-                <span className="text-base font-bold bg-gradient-to-r from-amber-600 to-yellow-500 bg-clip-text text-transparent">
-                  ₹{price}
-                </span>
-                
-                {isPromo && hasOrderedPromo ? (
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                    Offer Reedemed
-                  </span>
-                ) : !cartItem ? (
-                  <button 
-                    onClick={handleAddToCart}
-                    disabled={promoCheckLoading}
-                    className={`relative z-10 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white px-2 py-1 rounded-full text-xs transition-all duration-300 hover:scale-105 flex items-center gap-1 ${
-                      promoCheckLoading ? 'opacity-50 cursor-not-allowed' : ''
-                    }`}
-                  >
-                    <ShoppingCart size={14} />
-                    Add
-                  </button>
-                ) : (
-                <div className="flex items-center gap-1">
-                  <button
-                    onClick={() => handleUpdateQuantity(cartItem.quantity - 1)}
-                    className="p-1 rounded-full bg-amber-600 hover:bg-amber-700 text-white transition-colors"
-                    aria-label="Decrease quantity"
-                  >
-                    <Minus size={12} />
-                  </button>
-                  <span className="w-5 text-center text-xs font-semibold">
-                    {cartItem.quantity}
-                  </span>
-                  <button
-                    onClick={() => handleUpdateQuantity(cartItem.quantity + 1)}
-                    className="p-1 rounded-full bg-amber-600 hover:bg-amber-700 text-white transition-colors"
-                    aria-label="Increase quantity"
-                  >
-                    <Plus size={12} />
-                  </button>
-                </div>
-            )}
-          </div>
+          <div className="flex items-center justify-between mt-1">
+          <span className="text-base font-bold bg-gradient-to-r from-blue-600 to-amber-500 bg-clip-text text-transparent">
+            ₹{price}
+          </span>
+          
+          {isPromo && hasOrderedPromo ? (
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              Offer Redeemed
+            </span>
+          ) : !cartItem ? (
+            <button 
+              onClick={handleAddToCart}
+              disabled={promoCheckLoading}
+              className={`relative z-10 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white px-2 py-1 rounded-full text-xs transition-all duration-300 hover:scale-105 flex items-center gap-1 ${
+                promoCheckLoading ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+            >
+              <ShoppingCart size={14} />
+              Add
+            </button>
+          ) : (
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => handleUpdateQuantity(cartItem.quantity - 1)}
+                className="p-1 rounded-full bg-amber-600 hover:bg-amber-700 text-white transition-colors"
+                aria-label="Decrease quantity"
+              >
+                <Minus size={12} />
+              </button>
+              <span className="w-5 text-center text-xs font-semibold">
+                {cartItem.quantity}
+              </span>
+              {!isPromo && (
+                <button
+                  onClick={() => handleUpdateQuantity(cartItem.quantity + 1)}
+                  className="p-1 rounded-full bg-amber-600 hover:bg-amber-700 text-white transition-colors"
+                  aria-label="Increase quantity"
+                >
+                  <Plus size={12} />
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
-);
+  </div>
+  );
 }

@@ -4,8 +4,8 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-const AVAILABLE_CITIES = ['Hyderabad', 'Bangalore'] as const;
-const AVAILABLE_STATES = ['Telangana', 'Karnataka'] as const;
+const AVAILABLE_CITIES = ['Hyderabad'] as const;
+const AVAILABLE_STATES = ['Telangana'] as const;
 
 interface ProfileData {
   full_name: string;
@@ -17,6 +17,11 @@ interface ProfileData {
   pincode: string;
   is_profile_completed: boolean;
 }
+// Add this function at the top of the file, after the interfaces
+const isValidPhoneNumber = (phone: string) => {
+  const phoneRegex = /^[6-9]\d{9}$/;  // Starts with 6-9 and has exactly 10 digits
+  return phoneRegex.test(phone);
+};
 
 export function Profile() {
   const { user } = useAuth();
@@ -67,10 +72,42 @@ export function Profile() {
     e.preventDefault();
     setLoading(true);
     setMessage(null);
-
+  
     try {
       if (!user) throw new Error('No user logged in');
-
+  
+      // Validate phone number format
+      if (!isValidPhoneNumber(profileData.phone)) {
+        setMessage({ 
+          text: 'Please enter a valid 10-digit phone number starting with 6-9', 
+          type: 'error' 
+        });
+        setLoading(false);
+        return;
+      }
+  
+      // Check if phone number already exists (excluding current user)
+      const { data: existingUser, error: searchError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('phone', profileData.phone)
+        .neq('id', user.id)
+        .single();
+  
+      if (searchError && searchError.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+        throw searchError;
+      }
+  
+      if (existingUser) {
+        setMessage({ 
+          text: 'This phone number is already registered with another account', 
+          type: 'error' 
+        });
+        setLoading(false);
+        return;
+      }
+  
+      // If validation passes, proceed with the update
       const { error } = await supabase
         .from('profiles')
         .upsert({
@@ -79,18 +116,20 @@ export function Profile() {
           is_profile_completed: true,
           updated_at: new Date().toISOString()
         });
-
+  
       if (error) throw error;
-
+  
       setMessage({ text: 'Profile updated successfully!', type: 'success' });
       
-      // If this is a new user, show the start shopping button
       if (isNewUser || !profileData.is_profile_completed) {
         setProfileData(prev => ({ ...prev, is_profile_completed: true }));
       }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
       console.error('Error updating profile:', error);
       setMessage({ text: 'Error updating profile. Please try again.', type: 'error' });
+      // Also scroll to top to show error message
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {
       setLoading(false);
     }
@@ -99,9 +138,21 @@ export function Profile() {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
+    const { name, value } = e.target;
+    
+    if (name === 'phone') {
+      // Only allow digits and limit to 10 characters
+      const sanitizedValue = value.replace(/\D/g, '').slice(0, 10);
+      setProfileData(prev => ({
+        ...prev,
+        [name]: sanitizedValue
+      }));
+      return;
+    }
+  
     setProfileData(prev => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [name]: value
     }));
   };
 
@@ -127,13 +178,28 @@ export function Profile() {
             </p>
           </div>
 
+
           {message && (
-            <div className={`mb-6 p-4 rounded-lg ${
-              message.type === 'success' 
-                ? 'bg-green-500/10 border border-green-500/20 text-green-500' 
-                : 'bg-red-500/10 border border-red-500/20 text-red-500'
-            } animate-fade-in`}>
-              {message.text}
+            <div className="space-y-4">
+              <div className={`p-4 rounded-lg ${
+                message.type === 'success' 
+                  ? 'bg-green-500/10 border border-green-500/20 text-green-500' 
+                  : 'bg-red-500/10 border border-red-500/20 text-red-500'
+              } animate-fade-in`}>
+                {message.text}
+              </div>
+              
+              {message.type === 'success' && (
+                <div className="flex justify-center">
+                  <button
+                    onClick={startShopping}
+                    className="px-6 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold rounded-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg flex items-center gap-2"
+                  >
+                    <ShoppingCart className="h-5 w-5" />
+                    Start Shopping
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
@@ -147,7 +213,7 @@ export function Profile() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Full Name
+                    Full Name *
                   </label>
                   <div className="relative">
                     <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
@@ -165,7 +231,7 @@ export function Profile() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Phone Number
+                    Phone Number * <span className="text-xs text-gray-500">(10 digits)</span>
                   </label>
                   <div className="relative">
                     <Phone className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
@@ -174,11 +240,20 @@ export function Profile() {
                       name="phone"
                       value={profileData.phone}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-amber-500 dark:text-white"
-                      placeholder="+91 XXXXX XXXXX"
+                      className={`w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-700 border 
+                        ${profileData.phone && !isValidPhoneNumber(profileData.phone)
+                          ? 'border-red-500 focus:ring-red-500'
+                          : 'border-gray-300 dark:border-gray-600 focus:ring-amber-500'
+                        } rounded-lg focus:ring-2 dark:text-white`}
+                      placeholder="10-digit mobile number"
                       required
                     />
                   </div>
+                  {profileData.phone && !isValidPhoneNumber(profileData.phone) && (
+                    <p className="mt-1 text-sm text-red-500">
+                      Please enter a valid 10-digit mobile number starting with 6-9
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -186,13 +261,13 @@ export function Profile() {
             {/* Delivery Address */}
             <div className="space-y-4">
               <h2 className="text-xl font-semibold text-amber-600 dark:text-amber-400">
-                Delivery Address
+                Delivery Address 
               </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    House/Flat No.
+                    House/Flat No. *
                   </label>
                   <div className="relative">
                     <Home className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
@@ -210,7 +285,7 @@ export function Profile() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Street Address
+                    Street Address *
                   </label>
                   <div className="relative">
                     <MapPin className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
@@ -228,7 +303,7 @@ export function Profile() {
 
                 <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        City
+                        City *
                     </label>
                     <div className="relative">
                         <Building2 className="absolute left-3 top-3 h-5 w-5 text-gray-400 pointer-events-none" />
@@ -266,7 +341,7 @@ export function Profile() {
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            State
+                            State *
                         </label>
                         <div className="relative">
                             <MapPinned className="absolute left-3 top-3 h-5 w-5 text-gray-400 pointer-events-none" />
@@ -304,7 +379,7 @@ export function Profile() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    PIN Code
+                    PIN Code *
                   </label>
                   <div className="relative">
                     <MapPin className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
@@ -332,17 +407,6 @@ export function Profile() {
               {loading ? 'Saving...' : 'Save Changes'}
             </button>
           </form>
-
-          {/* Show Start Shopping button only after profile is completed */}
-          {(profileData.is_profile_completed || message?.type === 'success') && (
-            <button
-              onClick={startShopping}
-              className="w-full mt-4 py-3 px-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold rounded-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg flex items-center justify-center gap-2"
-            >
-              <ShoppingCart className="h-5 w-5" />
-              Start Shopping
-            </button>
-          )}
         </div>
       </div>
     </div>
