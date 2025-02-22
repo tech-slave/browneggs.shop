@@ -179,14 +179,14 @@ export default function Cart({ isOpen, onClose }: CartProps) {
                   </div>
                 </div>
                   {/* Add this prompt section */}
-  {state.items.length > 0 && (
-    <div className="mb-3 text-sm">
-      <p className="text-amber-600 dark:text-amber-400 flex items-center gap-1.5 justify-center animate-pulse">
-        <ShoppingBag className="w-4 h-4" />
-        Ready to complete your order? Click checkout below
-      </p>
-    </div>
-  )}
+                  {state.items.length > 0 && (
+                    <div className="mb-3 text-sm">
+                      <p className="text-amber-600 dark:text-amber-400 flex items-center gap-1.5 justify-center animate-pulse">
+                        <ShoppingBag className="w-4 h-4" />
+                        Ready to complete your order? Click checkout below
+                      </p>
+                    </div>
+                  )}
                 <button
                   onClick={handleCheckout}
                   disabled={isLoading || showCheckout}
