@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-//import qrCodeImage from './qr-code.png';
 import { ArrowLeft, Check, Clock, XCircle, ChevronDown, ChevronUp, Loader2, WifiOff } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
 import qrCodeImage from '../../assets/images/qr-code.png';
 import { CartItem } from '../context/CartContext';
 import { lockScroll, unlockScroll } from '../../utils/scrollLock';
+import { Copy } from 'lucide-react';
+import { SiGooglepay, SiPhonepe } from 'react-icons/si';
+import { FaIndianRupeeSign } from 'react-icons/fa6';
 
 interface CheckoutPageProps {
   onClose: () => void;
@@ -15,6 +17,7 @@ interface CheckoutPageProps {
 const calculateDeliveryFee = (items: CartItem[]): number => {
   return items.some(item => item.isPromo) ? 20 : 0;
 };
+
 
 const TIMEOUT_DURATION = 30000; // 30 seconds
 const MAX_RETRIES = 3;
@@ -56,7 +59,24 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
   const totalAmount = state.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const deliveryFee = calculateDeliveryFee(state.items);
   const finalTotal = totalAmount + deliveryFee;
+  const [showQR, setShowQR] = useState(false);
+  const [showCopied, setShowCopied] = useState(false);
 
+  const qrRef = useRef<HTMLDivElement>(null);
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+    }
+  };
+
+  const handleCopy = async () => {
+    await copyToClipboard('test@ybl');
+    setShowCopied(true);
+    setTimeout(() => setShowCopied(false), 2000);
+  };
   useEffect(() => {
     lockScroll();
     return () => {
@@ -267,91 +287,187 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
   const displayedItems = showAllItems ? state.items : state.items.slice(0, 3);
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative z-[101] bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full m-auto max-h-[90vh] overflow-y-auto">
-        {/* Timer */}
-        <div className="text-center mb-6">
-          <div className="flex items-center justify-center gap-2 text-red-500 mb-2">
-            <Clock className="animate-pulse" />
-            <span className="text-xl font-bold">{formatTime(timeLeft)}</span>
-          </div>
-          <p className="text-gray-600 dark:text-amber-300 blink animate-blink">
-            Please complete your payment before the timer expires
-          </p>
-        </div>
-
-        {error && (
-    <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded flex items-center gap-2">
-      {!isOnline ? <WifiOff className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
-      <div>
-        <p className="font-semibold">Error</p>
-        <p className="text-sm">{error}</p>
-        {loadingState === 'retrying' && (
-          <p className="text-sm mt-1">Retrying... Please wait.</p>
-        )}
-      </div>
-    </div>
-  )}
-
-        {/* Order Summary */}
-        <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 mb-6">
-          <h3 className="font-semibold mb-2 dark:text-white">Order Summary</h3>
-          {displayedItems.map((item) => (
-            <div key={item.id} className="flex justify-between text-sm mb-1">
-              <span className="dark:text-gray-300">
-                {item.quantity}x {item.title}
-              </span>
-              <span className="dark:text-gray-300">₹{item.price * item.quantity}</span>
+    <div className="fixed inset-0 flex items-center justify-center p-4">
+      <div 
+        className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100]" 
+        onClick={onClose}
+      />
+      <div 
+        className="relative z-[101] bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full m-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Scrollable content area */}
+        <div className="max-h-[80vh] overflow-y-auto">
+          <div className="p-6 space-y-6">
+          {/* Timer section - remove mb-6 since parent has padding */}
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-2 text-red-500 mb-2">
+              <Clock className="animate-pulse" />
+              <span className="text-xl font-bold">{formatTime(timeLeft)}</span>
             </div>
-          ))}
+            <p className="text-gray-600 dark:text-amber-300 blink animate-blink">
+              Please complete your payment before the timer expires
+            </p>
+          </div>
 
-          {hasMoreItems && (
-            <button
-              onClick={() => setShowAllItems(!showAllItems)}
-              className="w-full mt-2 pt-2 text-amber-600 hover:text-amber-700 text-sm font-medium flex items-center justify-center gap-1 transition-colors border-t border-gray-200 dark:border-gray-600"
-            >
-              {showAllItems ? (
-                <>
-                  Show Less <ChevronUp size={16} />
-                </>
-              ) : (
-                <>
-                  Show More ({state.items.length - 3} items) <ChevronDown size={16} />
-                </>
-              )}
-            </button>
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded flex items-center gap-2">
+              {!isOnline ? <WifiOff className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
+              <div>
+                <p className="font-semibold">Error</p>
+                <p className="text-sm">{error}</p>
+                {loadingState === 'retrying' && (
+                  <p className="text-sm mt-1">Retrying... Please wait.</p>
+                )}
+              </div>
+            </div>
           )}
 
-          <div className="space-y-2 pt-2 border-t dark:border-gray-600">
-            <div className="flex justify-between text-sm">
-              <span className="dark:text-gray-300">Subtotal:</span>
-              <span className="dark:text-gray-300">₹{state.total}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="dark:text-gray-300">Delivery Fee:</span>
-              <span className="dark:text-gray-300">₹{deliveryFee}</span>
-            </div>
-            <div className="flex justify-between font-bold pt-2 border-t dark:border-gray-600">
-              <span className="text-blue-600 dark:text-blue-400">Total:</span>
-              <span className="text-blue-600 dark:text-blue-400">₹{state.total + deliveryFee}</span>
+          {/* Order Summary */}
+          <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 mb-6">
+            <h3 className="font-semibold mb-2 dark:text-white">Order Summary</h3>
+            {displayedItems.map((item) => (
+              <div key={item.id} className="flex justify-between text-sm mb-1">
+                <span className="dark:text-gray-300">
+                  {item.quantity}x {item.title}
+                </span>
+                <span className="dark:text-gray-300">₹{item.price * item.quantity}</span>
+              </div>
+            ))}
+
+            {hasMoreItems && (
+              <button
+                onClick={() => setShowAllItems(!showAllItems)}
+                className="w-full mt-2 pt-2 text-amber-600 hover:text-amber-700 text-sm font-medium flex items-center justify-center gap-1 transition-colors border-t border-gray-200 dark:border-gray-600"
+              >
+                {showAllItems ? (
+                  <>
+                    Show Less <ChevronUp size={16} />
+                  </>
+                ) : (
+                  <>
+                    Show More ({state.items.length - 3} items) <ChevronDown size={16} />
+                  </>
+                )}
+              </button>
+            )}
+
+            <div className="space-y-2 pt-2 border-t dark:border-gray-600">
+              <div className="flex justify-between text-sm">
+                <span className="dark:text-gray-300">Subtotal:</span>
+                <span className="dark:text-gray-300">₹{state.total}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="dark:text-gray-300">Delivery Fee:</span>
+                <span className="dark:text-gray-300">₹{deliveryFee}</span>
+              </div>
+              <div className="flex justify-between font-bold pt-2 border-t dark:border-gray-600">
+                <span className="text-blue-600 dark:text-blue-400">Total:</span>
+                <span className="text-blue-600 dark:text-blue-400">₹{state.total + deliveryFee}</span>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* QR Code */}
-        <div className="text-center mb-6">
-          <img
-            src={qrCodeImage}
-            alt="Payment QR Code"
-            className="w-64 h-64 mx-auto mb-4 bg-white p-2 rounded-lg"
-          />
-          <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-            Scan the QR code with any UPI app to make the payment
-          </p>
-        </div>
+          <div className="flex flex-col mb-6 px-4">
+            <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">Payment Details</h3>
+            <div className="flex flex-col gap-3">
+              <div className="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg">
+                <div className="flex items-center gap-2 relative">
+                  <span className="text-gray-600 dark:text-green-400">UPI ID:</span>
+                  <span className="font-mono font-medium text-blue-600 dark:text-blue-400">test@ybl</span>
+                  <button
+                    onClick={handleCopy}
+                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                    title="Copy UPI ID"
+                  >
+                    <Copy size={14} />
+                  </button>
+                  {showCopied && (
+                    <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs py-1 px-2 rounded shadow-lg">
+                      Copied!
+                    </span>
+                  )}
+                </div>
+                <p className="text-sm font-medium text-amber-600 dark:text-amber-400 mt-2 animate-pulse">
+                  Please copy the UPI ID and complete the payment using your preferred UPI app.
+                </p>
+                <div className="flex items-center gap-6 mt-3 mb-2 justify-center">
+                <SiPhonepe className="w-8 h-8" style={{ color: '#5F259F' }} /> {/* PhonePe purple */}
+                <div className="relative w-8 h-8 flex items-center justify-center">
+                  {/* Hidden SVG with the gradient definition */}
+                  <svg width="0" height="0" style={{ position: 'absolute' }}>
+                    <defs>
+                      <linearGradient id="googlepayGradient" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stopColor="red" />
+                        <stop offset="33%" stopColor="yellow" />
+                        <stop offset="66%" stopColor="green" />
+                        <stop offset="100%" stopColor="blue" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                  {/* Clone the icon and override its fill with the gradient */}
+                  {React.cloneElement(<SiGooglepay className="w-full h-full" />, {
+                    fill: 'url(#googlepayGradient)',
+                  })}
+                </div>
+                {/* Google Pay blue */}
+                <div className="relative w-8 h-8 flex items-center justify-center">
+                    {/* Hidden SVG for gradient definition */}
+                    <svg width="0" height="0" style={{ position: 'absolute' }}>
+                      <defs>
+                        <linearGradient id="rupeeGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="orange" />
+                          <stop offset="50%" stopColor="white" />
+                          <stop offset="100%" stopColor="green" />
+                        </linearGradient>
+                      </defs>
+                    </svg>
+                    {/* Clone the icon and override its fill */}
+                    {React.cloneElement(<FaIndianRupeeSign className="w-5 h-5" />, { fill: 'url(#rupeeGradient)' })}
+                  </div>
+              </div>
+              </div>
+      
+              <button
+                onClick={() => {
+                  setShowQR(!showQR);
+                  // If showing QR, wait for state update and scroll
+                  if (!showQR) {
+                    setTimeout(() => {
+                      qrRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 100);
+                  }
+                }}
+                className="text-amber-600 hover:text-blue-700 dark:text-amber-500 dark:hover:text-blue-400 text-sm font-medium flex items-center gap-2"
+              >
+                {showQR ? (
+                  <>Hide QR Code<ChevronUp size={16} /></>
+                ) : (
+                  <>Show QR Code Instead<ChevronDown size={16} /></>
+                )}
+              </button>
+
+              {showQR && (
+                <div 
+                  ref={qrRef}
+                  className="flex flex-col items-center gap-2 transition-all duration-300 ease-in-out"
+                >
+                  <img
+                    src={qrCodeImage}
+                    alt="Payment QR Code"
+                    className="w-48 h-48 bg-white p-2 rounded-lg shadow-sm"
+                  />
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    You can also scan this QR code to make the payment
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
 
         {/* Action Buttons */}
+      {/* Fixed button container - outside scrollable area */}
+      <div className="border-t dark:border-gray-700 p-4 bg-white dark:bg-gray-800">
         <div className="flex gap-4 items-center justify-center">
           <button
             onClick={onClose}
@@ -389,6 +505,9 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
             )}
           </button>
         </div>
+      </div>
+    </div>
+  </div>
       </div>
     </div>
   );
