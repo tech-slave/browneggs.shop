@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { ShoppingCart } from 'lucide-react';
 import ProductCard from './ProductCard';
 import { supabase } from '../../lib/supabase';
+import { useCart } from '../context/CartContext';
 
 interface Product {
   id: string;
@@ -12,6 +14,7 @@ interface Product {
 }
 
 export function Products() {
+  const { state } = useCart(); // Add this line to access cart state
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -43,6 +46,39 @@ export function Products() {
 
   return (
     <div className="py-24 bg-gradient-to-b from-gray-50 via-amber-50/30 to-gray-50 dark:from-gray-900 dark:via-amber-900/20 dark:to-gray-900">
+{state.items.length > 0 && (
+  <>
+    {/* Desktop notification */}
+    <div className="hidden md:block fixed top-20 right-[200px] z-50"> {/* Adjusted position for desktop */}
+      <div className="relative">
+        <div className="absolute -top-3 right-36 w-4 h-4 bg-amber-100 dark:bg-amber-900 transform rotate-45" />
+        <div className="relative bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200 
+                    px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 
+                    animate-bounce">
+          <ShoppingCart className="w-4 h-4" />
+          <span className="text-sm whitespace-nowrap">
+            {state.items.length} item/s in cart - Click to checkout!
+          </span>
+        </div>
+      </div>
+    </div>
+
+    {/* Mobile notification */}
+    <div className="md:hidden fixed top-[72px] right-[30px] z-50"> {/* Adjusted position for mobile */}
+      <div className="relative">
+        <div className="absolute -top-3 right-16 w-4 h-4 bg-amber-100 dark:bg-amber-900 transform rotate-45" />
+        <div className="relative bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200 
+                    px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 
+                    animate-bounce">
+          <ShoppingCart className="w-4 h-4" />
+          <span className="text-sm whitespace-nowrap">
+            {state.items.length} item/s in cart - Click to checkout!
+          </span>
+        </div>
+      </div>
+    </div>
+  </>
+)}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16 animate-fade-up">
           <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-amber-700 to-yellow-600 bg-clip-text text-transparent">

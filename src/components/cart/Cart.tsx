@@ -178,11 +178,22 @@ export default function Cart({ isOpen, onClose }: CartProps) {
                     </span>
                   </div>
                 </div>
+                  {/* Add this prompt section */}
+  {state.items.length > 0 && (
+    <div className="mb-3 text-sm">
+      <p className="text-amber-600 dark:text-amber-400 flex items-center gap-1.5 justify-center animate-pulse">
+        <ShoppingBag className="w-4 h-4" />
+        Ready to complete your order? Click checkout below
+      </p>
+    </div>
+  )}
                 <button
                   onClick={handleCheckout}
-                  disabled={isLoading}
-                  className={`w-full py-3 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white rounded-lg font-semibold transition-colors ${
-                    isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                  disabled={isLoading || showCheckout}
+                  className={`w-full py-3 bg-gradient-to-r text-white rounded-lg font-semibold transition-all duration-300 ${
+                    isLoading || showCheckout 
+                      ? 'from-gray-400 to-gray-500 cursor-not-allowed opacity-50'
+                      : 'from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800'
                   }`}
                 >
                   {isLoading ? 'Processing...' : 'Checkout'}
