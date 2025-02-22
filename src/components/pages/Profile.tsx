@@ -6,6 +6,13 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 const AVAILABLE_CITIES = ['Hyderabad'] as const;
 const AVAILABLE_STATES = ['Telangana'] as const;
+const CONTACT_PHONE = '+919848022335';
+
+// Add at the top of your file, after imports
+interface LocationState {
+  isNewUser?: boolean;
+  from?: string;
+}
 
 interface ProfileData {
   full_name: string;
@@ -27,9 +34,10 @@ export function Profile() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const isNewUser = location.state?.isNewUser;
+  const state = location.state as LocationState;
+  const isNewUser = state?.isNewUser;
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{text: string; type: 'success' | 'error'} | null>(null);
+  const [message, setMessage] = useState<{text: React.ReactNode; type: 'success' | 'error'} | null>(null);
   const [profileData, setProfileData] = useState<ProfileData>({
     full_name: '',
     phone: '',
@@ -48,21 +56,25 @@ export function Profile() {
   const fetchProfile = async () => {
     try {
       if (!user) return;
-
+  
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user.id)
         .single();
-
-      if (error) throw error;
-
+  
+      // Don't throw error if profile doesn't exist yet (PGRST116)
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
+  
       if (data) {
         setProfileData({
           ...data,
           is_profile_completed: data.is_profile_completed || false
         });
       }
+      // If no data (new user), keep the default empty state
     } catch (error) {
       console.error('Error fetching profile:', error);
     }
@@ -86,27 +98,6 @@ export function Profile() {
         return;
       }
   
-      // Check if phone number already exists (excluding current user)
-      const { data: existingUser, error: searchError } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('phone', profileData.phone)
-        .neq('id', user.id)
-        .single();
-  
-      if (searchError && searchError.code !== 'PGRST116') { // PGRST116 is "no rows returned"
-        throw searchError;
-      }
-  
-      if (existingUser) {
-        setMessage({ 
-          text: 'This phone number is already registered with another account', 
-          type: 'error' 
-        });
-        setLoading(false);
-        return;
-      }
-  
       // If validation passes, proceed with the update
       const { error } = await supabase
         .from('profiles')
@@ -117,7 +108,27 @@ export function Profile() {
           updated_at: new Date().toISOString()
         });
   
-      if (error) throw error;
+      if (error) {
+        // Handle unique constraint violation
+        if (error.code === '23505' && error.message.includes('phone')) {
+          setMessage({ 
+            text: (
+              <span>
+                This phone number is already registered. If it's yours, please{' '}
+                <a 
+                  href={`tel:${CONTACT_PHONE}`}
+                  className="text-blue-600 hover:text-amber-700 font-medium"
+                >
+                  Contact Us
+                </a>
+              </span>
+            ),
+            type: 'error' 
+          });
+          return;
+        }
+        throw error;
+      }
   
       setMessage({ text: 'Profile updated successfully!', type: 'success' });
       
@@ -128,10 +139,9 @@ export function Profile() {
     } catch (error) {
       console.error('Error updating profile:', error);
       setMessage({ text: 'Error updating profile. Please try again.', type: 'error' });
-      // Also scroll to top to show error message
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {
       setLoading(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
