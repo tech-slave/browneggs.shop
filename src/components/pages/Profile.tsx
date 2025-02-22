@@ -6,7 +6,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 const AVAILABLE_CITIES = ['Hyderabad'] as const;
 const AVAILABLE_STATES = ['Telangana'] as const;
-const CONTACT_PHONE = '+919848022335';
+const CONTACT_PHONE = '+919493543214';
+const WHATSAPP_MESSAGE = encodeURIComponent('Hi, I need help with my profile verification.');
 
 // Add at the top of your file, after imports
 interface LocationState {
@@ -43,8 +44,8 @@ export function Profile() {
     phone: '',
     house_no: '',
     street_address: '',
-    city: '',
-    state: '',
+    city: AVAILABLE_CITIES[0],
+    state: AVAILABLE_STATES[0],
     pincode: '',
     is_profile_completed: false
   });
@@ -94,6 +95,7 @@ export function Profile() {
           text: 'Please enter a valid 10-digit phone number starting with 6-9', 
           type: 'error' 
         });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         setLoading(false);
         return;
       }
@@ -115,13 +117,19 @@ export function Profile() {
             text: (
               <span>
                 This phone number is already registered. If it's yours, please{' '}
-                <a href={`tel:${CONTACT_PHONE}`} className="text-amber-600 hover:text-amber-700 underline font-medium">
+                <a 
+                  href={`https://wa.me/${CONTACT_PHONE}?text=${WHATSAPP_MESSAGE}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-amber-700 underline font-medium"
+                >
                   Contact Us
                 </a>
               </span>
             ),
             type: 'error' 
           });
+          window.scrollTo({ top: 0, behavior: 'smooth' });
           return;
         }
         throw error;
@@ -129,7 +137,6 @@ export function Profile() {
   
       // After successful save, manually refresh the profile status
       await supabase.auth.refreshSession();
-      
       setMessage({ text: 'Profile updated successfully!', type: 'success' });
       setProfileData(prev => ({ ...prev, is_profile_completed: true }));
       
@@ -151,6 +158,7 @@ export function Profile() {
     } catch (error) {
       console.error('Error updating profile:', error);
       setMessage({ text: 'Error updating profile. Please try again.', type: 'error' });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {
       setLoading(false);
     }

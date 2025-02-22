@@ -5,7 +5,7 @@ import CheckoutPage from './Checkout';
 import { Link } from "react-router-dom";
 import { useLoading } from '../context/LoadingContext'; // Add this import at the top
 import { CartItem } from '../context/CartContext'; // Add this import for CartItem
-
+import { lockScroll, unlockScroll } from '../../utils/scrollLock';
 
 interface CartProps {
   isOpen: boolean;
@@ -22,6 +22,18 @@ export default function Cart({ isOpen, onClose }: CartProps) {
   const [showCheckout, setShowCheckout] = useState(false);
   const { loading: isLoading, setLoading } = useLoading(); // Destructure loading and rename it to isLoading
   const calculatedTotal = state.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+  useEffect(() => {
+    if (isOpen || showCheckout) {
+      lockScroll();
+    } else {
+      unlockScroll();
+    }
+
+    return () => {
+      unlockScroll(); // Cleanup on unmount
+    };
+  }, [isOpen, showCheckout]);
 
   useEffect(() => {
     // Verify cart total matches calculated total

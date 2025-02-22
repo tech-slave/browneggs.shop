@@ -62,11 +62,23 @@ export default function Footer() {
             <h3 className="text-lg font-semibold mb-3 font-bold bg-gradient-to-r from-amber-400 via-blue-500 to-amber-600 bg-clip-text text-transparent animate-gradient">Contact Us</h3>
             <p className="text-gray-400 flex items-center mb-3">
               <Phone className="w-5 h-5 mr-2" />
-              <a href="tel:+919493543214" className="hover:text-amber-500 transition-colors duration-300">+91 94935 43214</a>
+              <a 
+                href="tel:+919493543214" 
+                className="hover:text-amber-500 transition-colors duration-300"
+                aria-label="Call us"
+              >
+                +91 94935 43214
+              </a>
             </p>
             <p className="text-gray-400 flex items-center">
               <Mail className="w-5 h-5 mr-2" />
-              <a href="mailto:contact@browneggs.shop" className="hover:text-amber-500 transition-colors duration-300">contact@browneggs.shop</a>
+              <a 
+                href="mailto:contact@browneggs.shop"
+                className="hover:text-amber-500 transition-colors duration-300"
+                aria-label="Email us"
+              >
+                contact@browneggs.shop
+              </a>
             </p>
           </div>
         </div>

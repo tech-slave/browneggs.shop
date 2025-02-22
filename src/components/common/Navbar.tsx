@@ -182,14 +182,14 @@ export default function Navbar() {
                 onClick={handleAccountClick}
                 className="relative px-2 sm:px-3 py-2 text-sm font-medium group overflow-hidden flex items-center"
               >
-                <User className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-0" />
+                <User className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-0 text-white" />
                 <span className="relative z-10 text-white transition-colors duration-300 group-hover:text-amber-600 hidden md:inline ml-2">
                   Account
                 </span>
                 {isAccountOpen ? (
-                  <ChevronUp className="w-5 h-5 sm:w-6 sm:h-6 ml-1 hidden md:inline" />
+                  <ChevronUp className="w-5 h-5 sm:w-6 sm:h-6 ml-1 hidden md:inline text-white" />
                 ) : (
-                  <ChevronDown className="w-5 h-5 sm:w-6 sm:h-6 ml-1 hidden md:inline" />
+                  <ChevronDown className="w-5 h-5 sm:w-6 sm:h-6 ml-1 hidden md:inline text-white" />
                 )}
               </button>
               {isAccountOpen && (
@@ -261,11 +261,11 @@ export default function Navbar() {
                 onClick={handleAccountClick}
                 className="relative p-2 rounded-full bg-gradient-to-r from-amber-900/20 to-yellow-900/20 hover:from-amber-900/40 hover:to-yellow-900/40 text-white transition-all duration-300 flex items-center justify-center"
               >
-                <User className="w-5 h-5 sm:w-6 sm:h-6" />
+                <User className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 {isAccountOpen ? (
-                  <ChevronUp className="w-5 h-5 sm:w-6 sm:h-6 ml-1" />
+                  <ChevronUp className="w-5 h-5 sm:w-6 sm:h-6 ml-1 text-white" />
                 ) : (
-                  <ChevronDown className="w-5 h-5 sm:w-6 sm:h-6 ml-1" />
+                  <ChevronDown className="w-5 h-5 sm:w-6 sm:h-6 ml-1 text-white" />
                 )}
               </button>
               {isAccountOpen && (

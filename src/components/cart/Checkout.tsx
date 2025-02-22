@@ -7,6 +7,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
 import qrCodeImage from '../../assets/images/qr-code.png';
 import { CartItem } from '../context/CartContext';
+import { lockScroll, unlockScroll } from '../../utils/scrollLock';
 
 interface CheckoutPageProps {
   onClose: () => void;
@@ -55,6 +56,13 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
   const totalAmount = state.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const deliveryFee = calculateDeliveryFee(state.items);
   const finalTotal = totalAmount + deliveryFee;
+
+  useEffect(() => {
+    lockScroll();
+    return () => {
+      unlockScroll();
+    };
+  }, []);
 
   useEffect(() => {
     const handleOnline = () => {
@@ -261,7 +269,7 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative z-[101] bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 m-auto">
+      <div className="relative z-[101] bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full m-auto max-h-[90vh] overflow-y-auto">
         {/* Timer */}
         <div className="text-center mb-6">
           <div className="flex items-center justify-center gap-2 text-red-500 mb-2">

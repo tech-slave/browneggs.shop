@@ -12,6 +12,17 @@
   }
 }
 
+.overflow-hidden {
+  overflow: hidden !important;
+}
+
+/* For the modal content */
+.modal-content {
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .custom-cursor {
   width: 20px;
   height: 20px;
