@@ -50,31 +50,29 @@ export function Products() {
       {state.items.length > 0 && !isCartOpen && (
         <>
           {/* Desktop notification */}
-          <div className="hidden md:block fixed top-20 right-[200px] z-40"> {/* Reduced z-index to be below cart */}
+          <div className="hidden md:block absolute top-20 right-[200px] z-40"> {/* Reduced z-index to be below cart */}
             <div className="relative">
               <div className="absolute -top-3 right-36 w-4 h-4 bg-amber-100 dark:bg-amber-900 transform rotate-45" />
               <div className="relative bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200 
                           px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 
                           animate-bounce">
-                <ShoppingCart className="w-4 h-4" />
-                <span className="text-sm whitespace-nowrap">
-                  {state.items.length} items in cart - Click to checkout!
-                </span>
+              <span className="text-sm whitespace-nowrap flex items-center gap-1">
+                {state.items.length} items in cart - Click <ShoppingCart className="w-4 h-4 ml-1" /> to checkout! 
+              </span>
               </div>
             </div>
           </div>
 
           {/* Mobile notification */}
-          <div className="md:hidden fixed top-[72px] right-[10px] z-40"> {/* Reduced z-index to be below cart */}
-            <div className="relative">
+          <div className="md:hidden absolute top-[72px] right-[10px] z-40"> {/* Reduced z-index to be below cart */}
+            <div className="viewport">
               <div className="absolute -top-3 right-20 w-4 h-4 bg-amber-100 dark:bg-amber-900 transform rotate-45" />
               <div className="relative bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200 
                           px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 
                           animate-bounce">
-                <ShoppingCart className="w-4 h-4" />
-                <span className="text-sm whitespace-nowrap">
-                  {state.items.length} items in cart - Click to checkout!
-                </span>
+              <span className="text-sm whitespace-nowrap flex items-center gap-1">
+                {state.items.length} items in cart - Click<ShoppingCart className="w-4 h-4 ml-1" /> to checkout! 
+              </span>
               </div>
             </div>
           </div>

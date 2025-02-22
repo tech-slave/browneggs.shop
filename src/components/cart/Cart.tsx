@@ -157,10 +157,10 @@ export default function Cart({ isOpen, onClose }: CartProps) {
               </div>
 
               {/* Footer */}
-              <div className="sticky bottom-0 left-0 right-0 p-4 border-t dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg">
+              <div className="flex-none p-4 border-t dark:border-gray-700 bg-white dark:bg-gray-800 sticky bottom-0">
                 <div className="space-y-2 mb-4 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Total:</span>
+                    <span className="text-gray-600 dark:text-gray-400">Sub Total:</span>
                     <span className="text-gray-600 dark:text-gray-400">
                       {formatPrice(state.total)}
                     </span>
@@ -172,7 +172,7 @@ export default function Cart({ isOpen, onClose }: CartProps) {
                     </span>
                   </div>
                   <div className="flex justify-between font-semibold pt-2 border-t dark:border-gray-700">
-                    <span className="text-blue-600 dark:text-blue-400">Sub Total:</span>
+                    <span className="text-blue-600 dark:text-blue-400">Total:</span>
                     <span className="text-blue-600 dark:text-blue-400">
                       {formatPrice(state.total + calculateDeliveryFee(state.items))}
                     </span>
@@ -180,13 +180,22 @@ export default function Cart({ isOpen, onClose }: CartProps) {
                 </div>
                   {/* Add this prompt section */}
                   {state.items.length > 0 && (
-                    <div className="mb-3 text-sm">
-                      <p className="text-amber-600 dark:text-amber-400 flex items-center gap-1.5 justify-center animate-pulse">
-                        <ShoppingBag className="w-4 h-4" />
-                        Ready to complete your order? Click checkout below
-                      </p>
-                    </div>
-                  )}
+  <div className="mb-3 text-sm">
+    <p className={`flex items-center gap-1.5 justify-center ${
+      isLoading || showCheckout 
+        ? 'text-gray-400 dark:text-gray-500'
+        : 'text-amber-600 dark:text-amber-400 animate-pulse'
+    }`}>
+      <ShoppingBag className="w-4 h-4" />
+      {isLoading 
+        ? 'Processing your order...'
+        : showCheckout 
+          ? 'Please complete the payment..'
+          : 'Ready to complete order? Click checkout below'
+      }
+    </p>
+  </div>
+)}
                 <button
                   onClick={handleCheckout}
                   disabled={isLoading || showCheckout}
