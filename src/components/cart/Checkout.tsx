@@ -287,15 +287,16 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
   const displayedItems = showAllItems ? state.items : state.items.slice(0, 3);
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center p-4">
-      <div 
-        className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100]" 
-        onClick={onClose}
-      />
-      <div 
-        className="relative z-[101] bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full m-auto"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <>
+      {/* Add backdrop overlay */}
+      <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40" onClick={onClose} />
+      
+      {/* Update the existing outer div with higher z-index */}
+      <div className="fixed inset-0 flex items-center justify-center p-4 z-50">
+        <div 
+          className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full m-auto"
+          onClick={(e) => e.stopPropagation()}
+        >
         {/* Scrollable content area */}
         <div className="max-h-[80vh] overflow-y-auto">
           <div className="p-6 space-y-6">
@@ -510,5 +511,6 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
   </div>
       </div>
     </div>
+    </>
   );
 }

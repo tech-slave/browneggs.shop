@@ -38,18 +38,6 @@ export default function ProductCard({ id, title, price, image, description, isPr
 
     return () => observer.disconnect();
   }, []);
- 
-    // Add debug useEffect
-    useEffect(() => {
-      console.log('ProductCard state updated:', {
-        id,
-        isPromo,
-        purchasedPromoItems,
-        hasOrderedPromo,
-        loading: promoCheckLoading,
-        timestamp: new Date().toISOString()
-      });
-    }, [id, isPromo, purchasedPromoItems, hasOrderedPromo, promoCheckLoading]);
   
     const handleAddToCart = () => {
       console.log('Add to cart attempt:', {

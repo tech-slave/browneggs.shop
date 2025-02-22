@@ -68,22 +68,26 @@ export default function Cart({ isOpen, onClose }: CartProps) {
     }
   };
 
-
-
   return (
-    <div 
-      className={`fixed inset-0 z-50 transition-opacity duration-300 ${
-        isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
-      }`}
-    >
-
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
-      
+    <>
+      {/* Cart Modal */}
       <div 
-        className={`fixed top-0 right-0 w-full max-w-md h-screen bg-white dark:bg-gray-800 shadow-xl transform transition-transform duration-300 overflow-hidden ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
+        className={`fixed inset-0 z-[60] ${!isOpen || showCheckout ? 'pointer-events-none' : ''}`}
       >
+        {/* Backdrop */}
+        <div 
+          className={`fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 ${
+            isOpen ? 'opacity-100' : 'opacity-0'
+          }`} 
+          onClick={onClose}
+        />
+        
+        {/* Cart Content */}
+        <div 
+          className={`fixed top-0 right-0 w-full max-w-md h-screen bg-white dark:bg-gray-800 shadow-xl transform transition-transform duration-300 ${
+            isOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
+        >
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex-none p-4 border-b dark:border-gray-700">
@@ -119,7 +123,7 @@ export default function Cart({ isOpen, onClose }: CartProps) {
           ) : (
             <>
               {/* Scrollable content area */}
-              <div className="flex-1 overflow-y-auto">
+              <div className="flex-1 overflow-y-auto overscroll-contain">
                 <div className="p-4 space-y-4">
                   {state.items.map((item) => (
                     <div key={item.id} className="flex gap-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
@@ -153,7 +157,7 @@ export default function Cart({ isOpen, onClose }: CartProps) {
               </div>
 
               {/* Footer */}
-              <div className="flex-none p-4 border-t dark:border-gray-700 bg-white dark:bg-gray-800">
+              <div className="sticky bottom-0 left-0 right-0 p-4 border-t dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg">
                 <div className="space-y-2 mb-4 text-sm">
                   <div className="flex justify-between">
                     <span className="text-gray-600 dark:text-gray-400">Total:</span>
@@ -188,16 +192,24 @@ export default function Cart({ isOpen, onClose }: CartProps) {
           )}
         </div>
       </div>
-
-      {showCheckout && (
-        <CheckoutPage
-          onClose={() => {
-            setShowCheckout(false);
-            onClose();
-          }}
-        />
-      )}
-
     </div>
-  );
+    {/* Checkout Modal */}
+    {showCheckout && (
+      <div className="fixed inset-0 z-[70] isolate">
+        <div 
+          className="fixed inset-0 bg-black/70 backdrop-blur-md"
+          onClick={onClose}
+        />
+        <div className="relative z-[71] h-full">
+          <CheckoutPage
+            onClose={() => {
+              setShowCheckout(false);
+              onClose();
+            }}
+          />
+        </div>
+      </div>
+    )}
+  </>
+);
 }

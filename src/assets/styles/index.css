@@ -13,6 +13,46 @@
 }
 
 
+/* Update the existing backdrop-blur class */
+.backdrop-blur {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px); /* For Safari support */
+  pointer-events: none;
+}
+
+/* Add these new utility classes */
+.blur-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transition: all 0.3s ease;
+  pointer-events: auto;
+  z-index: 50;
+}
+
+.blur-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.blur-overlay.inactive {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Ensure content behind modal is not interactive */
+.modal-open {
+  overflow: hidden;
+}
+
+.modal-open > *:not(.modal) {
+  filter: blur(4px);
+  pointer-events: none;
+}
+
+
 .overflow-hidden {
   overflow: hidden !important;
 }

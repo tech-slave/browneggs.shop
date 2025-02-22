@@ -9,7 +9,6 @@ export function usePromoOrders() {
   
     useEffect(() => {
       async function fetchPromoOrders() {
-        console.log('Starting promo orders fetch for user:', user?.id);
   
         if (!user) {
           setLoading(false);
@@ -35,13 +34,10 @@ export function usePromoOrders() {
             .eq('product.is_promo', true)
             .neq('order.status', 'cancelled');
 
-          console.log('Order items with promo products:', orderItems);
-
           if (error) throw error;
 
           if (orderItems) {
             const promoIds = [...new Set(orderItems.map(item => item.product_id))];
-            console.log('Purchased promo product IDs:', promoIds);
             setPurchasedPromoItems(promoIds);
           }
 
