@@ -4,12 +4,18 @@ import { useCart } from '../context/CartContext';
 import CheckoutPage from './Checkout';
 import { Link } from "react-router-dom";
 import { useLoading } from '../context/LoadingContext'; // Add this import at the top
+import { CartItem } from '../context/CartContext'; // Add this import for CartItem
 
 
 interface CartProps {
   isOpen: boolean;
   onClose: () => void;
 }
+
+const calculateDeliveryFee = (items: CartItem[]): number => {
+  // Check if any promo items exist in cart
+  return items.some(item => item.isPromo) ? 20 : 0;
+};
 
 export default function Cart({ isOpen, onClose }: CartProps) {
   const { state, dispatch } = useCart();
@@ -20,11 +26,6 @@ export default function Cart({ isOpen, onClose }: CartProps) {
   useEffect(() => {
     // Verify cart total matches calculated total
     if (Math.abs(calculatedTotal - state.total) > 0.01) {
-      console.error('Cart total mismatch:', {
-        stored: state.total,
-        calculated: calculatedTotal,
-        difference: calculatedTotal - state.total
-      });
       // Fix the total if there's a mismatch
       dispatch({
         type: 'SET_ITEMS',
@@ -40,6 +41,7 @@ export default function Cart({ isOpen, onClose }: CartProps) {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 4500));
     setLoading(false);
+    // Pass total with delivery fee to checkout
     setShowCheckout(true);
   };
 
@@ -115,8 +117,8 @@ export default function Cart({ isOpen, onClose }: CartProps) {
                         className="w-20 h-20 object-cover rounded-lg"
                       />
                       <div className="flex-1">
-                        <h3 className="font-semibold dark:text-white">{item.title}</h3>
-                        <p className="text-lg font-bold dark:text-white">₹{item.price * item.quantity}</p>
+                        <h3 className="font-semibold dark:text-white">{item.title}</h3> {/* Add the title here */}
+                        <p className="text-lg font-bold dark:text-white">₹{item.price * item.quantity}</p> {/* Calculate total price */}
                         <div className="flex items-center gap-2 mt-2">
                           <button
                             onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
@@ -139,23 +141,37 @@ export default function Cart({ isOpen, onClose }: CartProps) {
               </div>
 
               {/* Footer */}
-      <div className="flex-none p-4 border-t dark:border-gray-700 bg-white dark:bg-gray-800">
-        <div className="flex justify-between mb-4">
-          <span className="text-lg font-semibold dark:text-white">Total:</span>
-          <span className="text-lg font-bold dark:text-white">
-            {formatPrice(state.total)}
-          </span>
-        </div>
-        <button
-          onClick={handleCheckout}
-          disabled={isLoading}
-          className={`w-full py-3 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white rounded-lg font-semibold transition-colors ${
-            isLoading ? 'opacity-50 cursor-not-allowed' : ''
-          }`}
-        >
-          {isLoading ? 'Processing...' : 'Checkout'}
-        </button>
-      </div>
+              <div className="flex-none p-4 border-t dark:border-gray-700 bg-white dark:bg-gray-800">
+                <div className="space-y-2 mb-4 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">Total:</span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      {formatPrice(state.total)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">Delivery Charges:</span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      {formatPrice(calculateDeliveryFee(state.items))}
+                    </span>
+                  </div>
+                  <div className="flex justify-between font-semibold pt-2 border-t dark:border-gray-700">
+                    <span className="text-blue-600 dark:text-blue-400">Sub Total:</span>
+                    <span className="text-blue-600 dark:text-blue-400">
+                      {formatPrice(state.total + calculateDeliveryFee(state.items))}
+                    </span>
+                  </div>
+                </div>
+                <button
+                  onClick={handleCheckout}
+                  disabled={isLoading}
+                  className={`w-full py-3 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white rounded-lg font-semibold transition-colors ${
+                    isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                >
+                  {isLoading ? 'Processing...' : 'Checkout'}
+                </button>
+              </div>
             </>
           )}
         </div>

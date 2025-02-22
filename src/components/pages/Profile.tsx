@@ -115,10 +115,7 @@ export function Profile() {
             text: (
               <span>
                 This phone number is already registered. If it's yours, please{' '}
-                <a 
-                  href={`tel:${CONTACT_PHONE}`}
-                  className="text-blue-600 hover:text-amber-700 font-medium"
-                >
+                <a href={`tel:${CONTACT_PHONE}`} className="text-amber-600 hover:text-amber-700 underline font-medium">
                   Contact Us
                 </a>
               </span>
@@ -130,18 +127,32 @@ export function Profile() {
         throw error;
       }
   
-      setMessage({ text: 'Profile updated successfully!', type: 'success' });
+      // After successful save, manually refresh the profile status
+      await supabase.auth.refreshSession();
       
-      if (isNewUser || !profileData.is_profile_completed) {
-        setProfileData(prev => ({ ...prev, is_profile_completed: true }));
-      }
+      setMessage({ text: 'Profile updated successfully!', type: 'success' });
+      setProfileData(prev => ({ ...prev, is_profile_completed: true }));
+      
+      // Force a profile check in ProtectedRoute
+      const channel = supabase.channel('profile-updates');
+      await channel.subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          await channel.send({
+            type: 'broadcast',
+            event: 'profile_updated',
+            payload: { user_id: user.id }
+          });
+          // Unsubscribe after sending
+          channel.unsubscribe();
+        }
+      });
+  
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
       console.error('Error updating profile:', error);
       setMessage({ text: 'Error updating profile. Please try again.', type: 'error' });
     } finally {
       setLoading(false);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 

@@ -6,14 +6,19 @@ import { ArrowLeft, Check, Clock, XCircle, ChevronDown, ChevronUp, Loader2, Wifi
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
 import qrCodeImage from '../../assets/images/qr-code.png';
+import { CartItem } from '../context/CartContext';
 
 interface CheckoutPageProps {
   onClose: () => void;
 }
+const calculateDeliveryFee = (items: CartItem[]): number => {
+  return items.some(item => item.isPromo) ? 20 : 0;
+};
 
 const TIMEOUT_DURATION = 30000; // 30 seconds
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000; // 1 second
+
 
 const retryOperation = async (operation: () => Promise<any>, maxRetries = MAX_RETRIES) => {
   for (let i = 0; i < maxRetries; i++) {
@@ -47,6 +52,9 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
   const [loadingState, setLoadingState] = useState<'idle' | 'processing' | 'retrying'>('idle');
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [networkRecoveryAttempts, setNetworkRecoveryAttempts] = useState(0);
+  const totalAmount = state.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const deliveryFee = calculateDeliveryFee(state.items);
+  const finalTotal = totalAmount + deliveryFee;
 
   useEffect(() => {
     const handleOnline = () => {
@@ -113,14 +121,6 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
         .single();
   
       if (error) {
-        console.error('Order creation error:', {
-          error,
-          orderData,
-          user: {
-            id: user.id,
-            provider: user.app_metadata?.provider
-          }
-        });
         throw error;
       }
   
@@ -137,25 +137,21 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
     const orderItems = state.items.map(item => ({
       order_id: orderId,
       product_id: item.id,
-      product_name: item.title,
+      product_name: item.title, // Make sure title is included
       quantity: item.quantity,
       price: item.price,
       created_at: new Date().toISOString()
     }));
   
-    console.log('Creating order items:', orderItems); // Debug log
-  
     const { data, error } = await supabase
       .from('order_items')
       .insert(orderItems)
-      .select(); // Add select to return created items
+      .select();
   
     if (error) {
-      console.error('Order items creation error:', error);
       throw new Error('Failed to create order items');
     }
   
-    console.log('Created order items:', data); // Debug log
     return data;
   };
 
@@ -193,13 +189,9 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
             throw new Error('User not authenticated');
         }
 
-        console.log('Starting payment confirmation...'); // Debug log
-        
-        const totalAmount = state.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-
         // Create order with timeout handling
         const orderData = await Promise.race([
-            retryOperation(() => createOrder(totalAmount)),
+            retryOperation(() => createOrder(finalTotal)), // Pass the final total including delivery fee
             new Promise((_, reject) => 
                 setTimeout(() => reject(new Error('Request timed out')), TIMEOUT_DURATION)
             )
@@ -209,29 +201,24 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
 
         // Create order items with retry
         await retryOperation(() => createOrderItems(orderData.id));
-
-        // Send order confirmation email
-        console.log('Invoking edge function with:', {
-            order: orderData,
-            email: user.email,
-            items: state.items
-        });
-        console.log('Sending confirmation email...'); // Debug log
         
         try {
-            await retryOperation(() =>
-                supabase.functions.invoke('orderconfirmation', {
-                    body: {
-                        order: orderData,
-                        email: user.email,
-                        items: state.items.map(item => ({
-                            product_name: item.title,
-                            quantity: item.quantity,
-                            price: item.price
-                        }))
-                    }
-                })
-            );
+          await retryOperation(() =>
+            supabase.functions.invoke('orderconfirmation', {
+              body: {
+                order: {
+                  ...orderData,
+                  delivery_fee: deliveryFee,
+                  final_total: finalTotal
+                },
+                email: user.email,
+                items: state.items.map(item => ({
+                  ...item,
+                  product_name: item.title // Ensure the title is mapped to product_name
+                }))
+              }
+            })
+          );
         } catch (emailError) {
             console.error('Email service error:', emailError);
         }
@@ -328,9 +315,19 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
             </button>
           )}
 
-          <div className="border-t dark:border-gray-600 mt-2 pt-2 flex justify-between font-bold">
-            <span className="dark:text-white">Total:</span>
-            <span className="dark:text-white">₹{state.total}</span>
+          <div className="space-y-2 pt-2 border-t dark:border-gray-600">
+            <div className="flex justify-between text-sm">
+              <span className="dark:text-gray-300">Subtotal:</span>
+              <span className="dark:text-gray-300">₹{state.total}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="dark:text-gray-300">Delivery Fee:</span>
+              <span className="dark:text-gray-300">₹{deliveryFee}</span>
+            </div>
+            <div className="flex justify-between font-bold pt-2 border-t dark:border-gray-600">
+              <span className="text-blue-600 dark:text-blue-400">Total:</span>
+              <span className="text-blue-600 dark:text-blue-400">₹{state.total + deliveryFee}</span>
+            </div>
           </div>
         </div>
 

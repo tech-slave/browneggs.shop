@@ -9,42 +9,41 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [isProfileComplete, setIsProfileComplete] = useState<boolean | null>(null);
   const currentPath = location.pathname;
 
-  useEffect(() => {
-    const checkProfile = async () => {
-      if (user) {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('is_profile_completed')
-          .eq('id', user.id)
-          .single();
-        
-        setIsProfileComplete(data?.is_profile_completed ?? false);
-      }
-    };
+  const checkProfile = async () => {
+    if (!user) return;
+    
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('is_profile_completed')
+      .eq('id', user.id)
+      .single();
+    
+    // Handle PGRST116 (no rows) as false rather than error
+    if (error && error.code === 'PGRST116') {
+      setIsProfileComplete(false);
+      return;
+    }
 
-    // Initial check
+    if (!error) {
+      setIsProfileComplete(data?.is_profile_completed ?? false);
+    }
+  };
+
+  useEffect(() => {
     checkProfile();
 
-    // Set up real-time subscription
-    const subscription = supabase
-      .channel('profile-changes')
-      .on('postgres_changes', 
-        {
-          event: '*',
-          schema: 'public',
-          table: 'profiles',
-          filter: `id=eq.${user?.id}`
-        },
-        (payload) => {
-          const updatedProfile = payload.new as { is_profile_completed: boolean };
-          setIsProfileComplete(updatedProfile.is_profile_completed);
+    const channel = supabase.channel('profile-updates');
+    
+    channel
+      .on('broadcast', { event: 'profile_updated' }, (payload) => {
+        if (payload.payload?.user_id === user?.id) {
+          checkProfile();
         }
-      )
+      })
       .subscribe();
 
-    // Cleanup subscription
     return () => {
-      subscription.unsubscribe();
+      channel.unsubscribe();
     };
   }, [user]);
 
@@ -52,7 +51,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
     return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
 
-  // Show loading state while checking profile
+  // Show loading only briefly while checking profile first time
   if (isProfileComplete === null) {
     return (
       <div className="h-screen flex items-center justify-center">
@@ -61,7 +60,6 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
     );
   }
 
-  // If profile is not complete and user is trying to access any page other than profile
   if (!isProfileComplete && currentPath !== '/profile') {
     return <Navigate to="/profile" state={{ isNewUser: true }} replace />;
   }

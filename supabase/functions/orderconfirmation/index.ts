@@ -7,6 +7,9 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+const calculateDeliveryFee = (items: any[]): number => {
+  return items.some((item: any) => item.isPromo || item.is_promo) ? 20 : 0;
+};
 
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight request
@@ -30,10 +33,23 @@ const handler = async (req: Request): Promise<Response> => {
           minute: '2-digit'
         });
       };
+      // Add debug logging
+      console.log('Order confirmation data:', {
+        items,
+        order,
+        itemsWithNames: items.map(item => ({
+          id: item.id,
+          name: item.product_name || item.title,
+          quantity: item.quantity
+        }))
+      });
 
       const totalAmount = items.reduce((sum: number, item: any) => 
         sum + (item.price * item.quantity), 0
       );
+      // Use the delivery fee passed from checkout
+      const deliveryFee = order.delivery_fee || 0;
+      const finalTotal = order.final_total || totalAmount + deliveryFee;
 
       const emailContent = `<!DOCTYPE html>
 <html lang="en">
@@ -144,17 +160,29 @@ const handler = async (req: Request): Promise<Response> => {
             <tbody>
                 ${items.map((item: any) => `
                     <tr>
-                        <td>${item.product_name}</td>
+                        <td>${item.product_name || item.title}</td>
                         <td>${item.quantity}</td>
                         <td>₹${item.price}</td>
                         <td>₹${item.price * item.quantity}</td>
                     </tr>
                 `).join('')}
+                <tr>
+                    <td colspan="3" style="text-align: right;"><strong>Subtotal:</strong></td>
+                    <td>₹${totalAmount}</td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="text-align: right;"><strong>Delivery Fee:</strong></td>
+                    <td>₹${deliveryFee}</td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="text-align: right;"><strong>Total Amount:</strong></td>
+                    <td>₹${finalTotal}</td>
+                </tr>
             </tbody>
         </table>
 
         <div class="total">
-            Total Amount: ₹${totalAmount}
+            Total Amount: ₹${finalTotal}
         </div>
 
         <div style="text-align: center; margin-top: 30px;">
