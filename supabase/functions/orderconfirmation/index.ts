@@ -153,11 +153,11 @@ const getEmailContentByStatus = (order: any, items: any[], totalAmount: number, 
           <p><strong>Order ID:</strong> #${order.id.slice(0, 8)}</p>
           <p><strong>Order Date:</strong> ${formatDate(order.created_at)}</p>
           <p><strong>Status:</strong> 
-            <span class="status-${order.status.toLowerCase()}">
+            <span style="color:#FFBF00;" class="status-${order.status.toLowerCase()}">
               ${order.status}
             </span>
           </p>
-          <p><em>${order.order_notes}</em></p>
+          <p><strong>Status Note:</strong> <span style="color:#FFBF00;">${order.order_notes}</span></p>
         </div>
         <h3>Order Items</h3>
         <table class="items-table">
@@ -253,7 +253,7 @@ const handler = async (req: Request): Promise<Response> => {
         },
         body: JSON.stringify({
           from: "browneggs.shop <contact@browneggs.shop>",
-          to: [email, 'contact@browneggs.shop'],
+          to: email,
           subject: emailContent.subject,
           html: emailContent.html,
         }),

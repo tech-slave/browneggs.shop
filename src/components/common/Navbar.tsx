@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X, ShoppingCart, Home, User, ChevronDown, ChevronUp, Store } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate,useSearchParams } from 'react-router-dom';
 import Cart from '../cart/Cart';
 import { useCart } from '../context/CartContext';
 import logo from '../../assets/images/bes.png';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
+import { isAdminemails } from '../../config/adminConfig';
+
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,6 +21,12 @@ export default function Navbar() {
   const { state } = useCart();
   const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
   const [clickTimeout, setClickTimeout] = useState<NodeJS.Timeout | null>(null);
+
+  const [searchParams] = useSearchParams();
+
+  // const isAdminUser = searchParams.get('isAdmin') === 'true' || (user ? isAdmin(user.email) : false);
+  const isAdminLoginPage = searchParams.get('isAdmin') === 'true';
+  const isAdminUser = user ? isAdminemails(user.email) : false;
 
   const navLinks: { [key: string]: string } = {
     Home: '/',
@@ -40,7 +48,12 @@ export default function Navbar() {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
-      navigate('/login');
+      // Redirect to admin login if user is admin
+      if (isAdminUser) {
+        navigate('/login?isAdmin=true');
+      } else {
+        navigate('/login');
+      }
     } catch (error) {
       console.error('Error logging out:', error);
     }
@@ -111,6 +124,74 @@ export default function Navbar() {
     setIsAccountOpen(false);
   };
 
+  if (isAdminLoginPage) {
+    return (
+      <div className="fixed w-full top-0 z-50 p-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <img src={logo} alt="Logo" className="h-8 w-8" />
+              <div>
+                <h3 className="text-xl font-bold text-amber-500">
+                  Order Management System
+                </h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isAdminUser) {
+    return (
+      <nav 
+        className={`fixed w-full z-50 transition-all duration-500 ${
+          isScrolled 
+            ? 'bg-gradient-to-r from-amber-900/90 via-black/90 to-amber-900/90 backdrop-blur-lg shadow-lg'
+            : 'bg-gradient-to-r from-black/20 via-amber-900/20 to-black/20 backdrop-blur-sm'
+        } ${isVisible ? 'top-0' : '-top-16'}`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* Admin Logo section */}
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <Link to="/oms">
+                <img src={logo} alt="Logo" className="h-6 w-6 sm:h-10 sm:w-10" />
+              </Link>
+              <Link to="/oms">
+                <span className="text-sm sm:text-2xl font-bold text-white">
+                  Admin Panel
+                </span>
+              </Link>
+            </div>
+  
+            {/* Admin Controls - Modified for better mobile view */}
+            <div className="flex items-center gap-4">
+              <span className="hidden md:block text-amber-400 font-medium bg-amber-400/10 px-3 py-1 rounded">
+                Admin Mode
+              </span>
+              {/* Desktop sign out */}
+              <button
+                onClick={handleLogout}
+                className="hidden md:flex items-center gap-2 px-4 py-2 text-white hover:text-amber-400 transition-colors duration-300"
+              >
+                <User className="w-5 h-5" />
+                <span className="hidden md:inline">Sign Out</span>
+              </button>
+              {/* Mobile sign out */}
+              <button
+                onClick={handleLogout}
+                className="md:hidden px-3 py-1.5 text-sm text-white bg-red-500/20 hover:bg-red-500/30 border border-red-500/50 rounded-lg transition-colors duration-300"
+              >
+                Sign Out
+              </button>
+            </div>
+          </div>
+        </div>
+      </nav>
+    );
+  }
   return (
     <nav 
       className={`fixed w-full z-50 transition-all duration-500 ${

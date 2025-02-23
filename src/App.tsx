@@ -19,6 +19,8 @@ import { ResetPasswordForm } from './components/auth/ResetPassword';
 import { UpdatePasswordForm } from './components/auth/UpdatePassword';
 import { ResetPasswordRoute } from './components/auth/ResetPasswordRoute';
 import { LoadingProvider } from './components/context/LoadingContext';
+import { OMS } from './components/pages/OMS';
+import { AdminRoute } from './components/common/AdminRoute';
 
 
 function HomePage() {
@@ -77,6 +79,14 @@ function App() {
                     <ResetPasswordRoute>
                       <UpdatePasswordForm />
                     </ResetPasswordRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/oms" 
+                    element={
+                      <AdminRoute>
+                        <OMS />
+                      </AdminRoute>
                     } 
                   />
                   <Route path="/" element={<HomePage />} />

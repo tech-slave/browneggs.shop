@@ -11,6 +11,7 @@ export default {
         'gradient': 'gradient 8s ease infinite',
         'slideUp': 'slideUp 0.5s ease-in-out',
         'slideDown': 'slideDown 0.5s ease-in-out',
+        'fade-in-scale': 'fadeInScale 0.3s ease-out',
       },
       transitionProperty: {
         'transform': 'transform',
@@ -19,6 +20,16 @@ export default {
         '500': '500ms',
       },
       keyframes: {
+        fadeInScale: {
+          '0%': { 
+            opacity: '0',
+            transform: 'scale(0.95)'
+          },
+          '100%': { 
+            opacity: '1',
+            transform: 'scale(1)'
+          }
+        },
         float: {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-20px)' },

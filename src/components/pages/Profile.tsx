@@ -4,7 +4,30 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-const AVAILABLE_CITIES = ['Hyderabad'] as const;
+const AVAILABLE_CITIES = [
+  'Tolichowki',
+  'Shaikpet',
+  'Panjagutta',
+  'Attapur',
+  'Manikonda',
+  'Rajendranagar',
+  'Bandlaguda Jagir',
+  'Somajiguda',
+  'Film Nagar',
+  'Ameerpet',
+  'Jubilee Hills',
+  'Yousufguda',
+  'Banjara Hills',
+  'Begumpet',
+  'Narsingi',
+  'Borabanda',
+  'Wipro Circle',
+  'Madhapur',
+  'Secunderabad',
+  'Gachibowli',
+  'HITEC City',
+  'Kondapur'
+] as const;
 const AVAILABLE_STATES = ['Telangana'] as const;
 const CONTACT_PHONE = '+919493543214';
 const WHATSAPP_MESSAGE = encodeURIComponent('Hi, I need help with my profile verification.');
@@ -44,7 +67,7 @@ export function Profile() {
     phone: '',
     house_no: '',
     street_address: '',
-    city: AVAILABLE_CITIES[0],
+    city: '',
     state: AVAILABLE_STATES[0],
     pincode: '',
     is_profile_completed: false
