@@ -28,21 +28,32 @@ export function AuthForm({ type, redirectTo = '/',isAdmin=false }: AuthFormProps
     try {
       // For signup, only allow non-admin emails
       if (type === 'signup') {
-        if (isAdminemails(email)) {
-          throw new Error('Admin accounts must use the admin login page.');
-        }
         const { error } = await supabase.auth.signUp({
           email,
           password,
         });
         if (error) throw error;
+
+      // Check if it's an admin email after successful signup
+      if (isAdminemails(email)) {
+        // Sign out the user first
+        await supabase.auth.signOut();
+        // Then redirect to admin login with message
+        navigate('/login?isAdmin=true', { 
+          state: { 
+            message: 'Admin account created successfully! Please login here to access the admin portal.',
+            type: 'success'
+          }
+        });
+      } else {
         navigate('/profile', { 
           state: { 
             message: 'Account created successfully! Please login to continue.',
             from: redirectTo
           }
         });
-        return;
+      }
+      return;
       } else {
         // For login, check if the email matches the intended login type
         const isAdminEmail = isAdminemails(email);
