@@ -61,6 +61,7 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
   const finalTotal = totalAmount + deliveryFee;
   const [showQR, setShowQR] = useState(false);
   const [showCopied, setShowCopied] = useState(false);
+  const [showAllOrderItems, setShowAllOrderItems] = useState(false);
 
   const qrRef = useRef<HTMLDivElement>(null);
 
@@ -282,10 +283,6 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
     }
 };
 
-
-  const hasMoreItems = state.items.length > 3;
-  const displayedItems = showAllItems ? state.items : state.items.slice(0, 3);
-
   return (
     <>
       {/* Add backdrop overlay */}
@@ -298,7 +295,7 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
           onClick={(e) => e.stopPropagation()}
         >
         {/* Scrollable content area */}
-        <div className="max-h-[80vh] overflow-y-auto">
+        <div className="max-h-[90vh] overflow-y-auto">
           <div className="p-6 space-y-6">
           {/* Timer section - remove mb-6 since parent has padding */}
           <div className="text-center">
@@ -323,35 +320,49 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
               </div>
             </div>
           )}
+{/* Order Summary section */}
+<div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 mb-6">
+  <h3 className="font-semibold mb-2 dark:text-white">Order Summary</h3>
+  
+  {/* Always show first item */}
+  {state.items.length > 0 && (
+    <div className="flex justify-between text-sm mb-1">
+      <span className="dark:text-gray-300">
+        {state.items[0].quantity}x {state.items[0].title}
+      </span>
+      <span className="dark:text-gray-300">₹{state.items[0].price * state.items[0].quantity}</span>
+    </div>
+  )}
 
-          {/* Order Summary */}
-          <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 mb-6">
-            <h3 className="font-semibold mb-2 dark:text-white">Order Summary</h3>
-            {displayedItems.map((item) => (
-              <div key={item.id} className="flex justify-between text-sm mb-1">
-                <span className="dark:text-gray-300">
-                  {item.quantity}x {item.title}
-                </span>
-                <span className="dark:text-gray-300">₹{item.price * item.quantity}</span>
-              </div>
-            ))}
+  {/* Show remaining items if showAllOrderItems is true */}
+  {showAllOrderItems && state.items.slice(1).map((item) => (
+    <div key={item.id} className="flex justify-between text-sm mb-1">
+      <span className="dark:text-gray-300">
+        {item.quantity}x {item.title}
+      </span>
+      <span className="dark:text-gray-300">₹{item.price * item.quantity}</span>
+    </div>
+  ))}
 
-            {hasMoreItems && (
-              <button
-                onClick={() => setShowAllItems(!showAllItems)}
-                className="w-full mt-2 pt-2 text-amber-600 hover:text-amber-700 text-sm font-medium flex items-center justify-center gap-1 transition-colors border-t border-gray-200 dark:border-gray-600"
-              >
-                {showAllItems ? (
-                  <>
-                    Show Less <ChevronUp size={16} />
-                  </>
-                ) : (
-                  <>
-                    Show More ({state.items.length - 3} items) <ChevronDown size={16} />
-                  </>
-                )}
-              </button>
-            )}
+  {/* Show More/Less button if there are more than 1 items */}
+  {state.items.length > 1 && (
+    <div className="flex justify-end">
+      <button
+        onClick={() => setShowAllOrderItems(!showAllOrderItems)}
+        className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1"
+      >
+        {showAllOrderItems ? (
+          <>
+            Show Less <ChevronUp size={14} />
+          </>
+        ) : (
+          <>
+            Show More ({state.items.length - 1}) <ChevronDown size={14} />
+          </>
+        )}
+      </button>
+    </div>
+  )}
 
             <div className="space-y-2 pt-2 border-t dark:border-gray-600">
               <div className="flex justify-between text-sm">
