@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
-import { ShoppingCart, CheckCircle, Clock, ChevronDown, ChevronUp, MessageCircle, Mail } from 'lucide-react';
+import { ShoppingCart, XCircle ,CheckCircle, Clock, ChevronDown, ChevronUp, MessageCircle, Mail } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
 import { useConfetti } from '../common/Confetti';
 import { useLocation } from 'react-router-dom';
 import { Link } from "react-router-dom";
+
 interface OrderItem {
   id: string;
   order_id: string;
@@ -19,8 +20,10 @@ interface Order {
   id: string;
   user_id: string;
   total_amount: number;
-  status: 'pending' | 'fulfilled';
+  status: 'Processing' | 'Cancelled' | 'Delivered';
   created_at: string;
+  user_full_name: string;
+  order_notes: string;
   items?: OrderItem[];
 }
 
@@ -141,16 +144,21 @@ export default function Orders() {
                         Ordered on: {new Date(order.created_at).toLocaleDateString()}
                       </p>
                     </div>
+
                     <div className="flex items-center gap-2">
-                      {order.status === 'fulfilled' ? (
+                      {order.status === 'Delivered' ? (
                         <CheckCircle className="h-6 w-6 text-green-500" />
+                      ) : order.status === 'Cancelled' ? (
+                        <XCircle className="h-6 w-6 text-red-500" />
                       ) : (
                         <Clock className="h-6 w-6 text-yellow-500" />
                       )}
-                      <span className="text-gray-600 dark:text-green-400">
-                        {order.status === 'pending' 
-                          ? 'We are verifying your payment'
-                          : 'Order Fulfilled'}
+                      <span className={`
+                        ${order.status === 'Delivered' ? 'text-green-600 dark:text-green-400' : ''}
+                        ${order.status === 'Cancelled' ? 'text-red-600 dark:text-red-400' : ''}
+                        ${order.status === 'Processing' ? 'text-yellow-600 dark:text-yellow-400' : ''}
+                      `}>
+                        {order.status}
                       </span>
                     </div>
                   </div>
@@ -158,9 +166,13 @@ export default function Orders() {
                   {/* Expandable items section */}
                   {expandedOrder === order.id && order.items && (
                     <div className="mt-4 space-y-2 border-t pt-4 dark:border-gray-600 animate-fade-down">
+                      <p className="text-gray-500 dark:text-amber-400 text-sm italic mt-1">
+                        {order.order_notes}
+                      </p>
                       <h3 className="font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Order Items ({order.items.length})
                       </h3>
+
                       {order.items.map((item) => (
                         <div key={item.id} className="flex justify-between text-sm">
                           <span className="text-gray-600 dark:text-gray-400">

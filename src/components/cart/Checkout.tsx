@@ -134,14 +134,28 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
   
     // Verify session and user existence
     await verifyAuthStatus();
+    
+    // Fetch user's full name from profiles table
+    const { data: profileData, error: profileError } = await supabase
+      .from('profiles')
+      .select('full_name')
+      .eq('id', user.id)
+      .single();
+
+    if (profileError) {
+      console.error('Error fetching profile:', profileError);
+      throw new Error('Error fetching user profile');
+    }
   
     const orderData = {
       user_id: user.id,
       total_amount: totalAmount,
-      status: 'pending',
-      created_at: new Date().toISOString()
+      status: 'Processing', // Changed from 'pending' to 'Processing'
+      created_at: new Date().toISOString(),
+      user_full_name: profileData?.full_name || 'Unknown User',
+      order_notes: 'Verifying your payment' // Default note for new orders
     };
-  
+
     try {
       const { data, error } = await supabase
         .from('orders')
@@ -160,7 +174,7 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
       }
       throw new Error(`Order creation failed: ${error.message}`);
     }
-  };
+};
 
   const createOrderItems = async (orderId: string) => {
     const orderItems = state.items.map(item => ({
@@ -230,27 +244,6 @@ export default function CheckoutPage({ onClose }: CheckoutPageProps) {
 
         // Create order items with retry
         await retryOperation(() => createOrderItems(orderData.id));
-        
-        try {
-          await retryOperation(() =>
-            supabase.functions.invoke('orderconfirmation', {
-              body: {
-                order: {
-                  ...orderData,
-                  delivery_fee: deliveryFee,
-                  final_total: finalTotal
-                },
-                email: user.email,
-                items: state.items.map(item => ({
-                  ...item,
-                  product_name: item.title // Ensure the title is mapped to product_name
-                }))
-              }
-            })
-          );
-        } catch (emailError) {
-            console.error('Email service error:', emailError);
-        }
 
         setIsPaid(true);
         dispatch({ type: 'CLEAR_CART' });

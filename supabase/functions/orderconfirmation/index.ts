@@ -1,64 +1,28 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 
-const resendapi = "re_XtnQr9r1_Dg6MRJGm28pXmpyZ5JeL86S3";
+// const calculateDeliveryFee = (items: any[]): number => {
+//   return items.some((item: any) => item.isPromo || item.is_promo) ? 20 : 0;
+// };
 
+const resendapi = "re_XtnQr9r1_Dg6MRJGm28pXmpyZ5JeL86S3";
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
-const calculateDeliveryFee = (items: any[]): number => {
-  return items.some((item: any) => item.isPromo || item.is_promo) ? 20 : 0;
+const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString('en-IN', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
 };
 
-const handler = async (req: Request): Promise<Response> => {
-  // Handle CORS preflight request
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
-  }
-  if (req.method === "POST") {
-    try {
-      const { order, email, items } = await req.json();
-      
-      if (!order || !email || !items) {
-        return new Response("Missing required data", { status: 400 });
-      }
-
-      const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('en-IN', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        });
-      };
-      // Add debug logging
-      console.log('Order confirmation data:', {
-        items,
-        order,
-        itemsWithNames: items.map(item => ({
-          id: item.id,
-          name: item.product_name || item.title,
-          quantity: item.quantity
-        }))
-      });
-
-      const totalAmount = items.reduce((sum: number, item: any) => 
-        sum + (item.price * item.quantity), 0
-      );
-      // Use the delivery fee passed from checkout
-      const deliveryFee = order.delivery_fee || 0;
-      const finalTotal = order.final_total || totalAmount + deliveryFee;
-
-      const emailContent = `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Confirmation - browneggs.shop</title>
-    <style>
-        body {
+const getEmailContentByStatus = (order: any, items: any[], totalAmount: number, deliveryFee: number, finalTotal: number) => {
+  const baseStyles = `
+    body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
@@ -126,27 +90,75 @@ const handler = async (req: Request): Promise<Response> => {
             border-radius: 6px;
             margin-top: 20px;
         }
-    </style>
-</head>
-<body>
-    <div class="container">
+  `;
+
+  const getStatusSpecificContent = (status: string) => {
+    switch (status) {
+      case 'Processing':
+        return {
+          subject: `Order Confirmation #${order.id.slice(0, 8)} - browneggs.shop`,
+          title: 'Order Confirmation',
+          message: 'Thank you for your order!',
+          statusColor: 'text-yellow-600',
+          icon: '⏳'
+        };
+      case 'Delivered':
+        return {
+          subject: `Order Delivered #${order.id.slice(0, 8)} - browneggs.shop`,
+          title: 'Order Delivered',
+          message: 'Your order has been delivered!',
+          statusColor: 'text-green-600',
+          icon: '✅'
+        };
+      case 'Cancelled':
+        return {
+          subject: `Order Cancelled #${order.id.slice(0, 8)} - browneggs.shop`,
+          title: 'Order Cancelled',
+          message: 'Your order has been cancelled.',
+          statusColor: 'text-red-600',
+          icon: '❌'
+        };
+      default:
+        return {
+          subject: `Order Update #${order.id.slice(0, 8)} - browneggs.shop`,
+          title: 'Order Update',
+          message: 'Your order status has been updated.',
+          statusColor: 'text-gray-600',
+          icon: 'ℹ️'
+        };
+    }
+  };
+  const statusContent = getStatusSpecificContent(order.status);
+  return {
+    subject: statusContent.subject,
+    html: `<!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>${statusContent.title} - browneggs.shop</title>
+      <style>${baseStyles}</style>
+    </head>
+    <body>
+      <div class="container">
         <div class="header">
-            <img src="https://browneggs.shop/assets/bes-BD7yFRVI.png" alt="browneggs.shop Logo" width="120" class="logo">
-            <h1>Order Confirmation</h1>
-            <p>Thank you for your order!</p>
+          <img src="https://browneggs.shop/assets/bes-BD7yFRVI.png" alt="browneggs.shop Logo" width="120" class="logo">
+          <h1>${statusContent.icon} ${statusContent.title}</h1>
+          <p>Hi ${order.user_full_name},</p>
+          <p>${statusContent.message}</p>
         </div>
 
         <div class="order-info">
-            <h2>Order Details</h2>
-            <p><strong>Order ID:</strong> #${order.id.slice(0, 8)}</p>
-            <p><strong>Order Date:</strong> ${formatDate(order.created_at)}</p>
-            <p><strong>Status:</strong> 
-                <span class="status-${order.status}">
-                    ${order.status === 'pending' ? 'Your order has been placed successfully, We are currently verifying your payment!' : 'Order Fulfilled'}
-                </span>
-            </p>
+          <h2>Order Details</h2>
+          <p><strong>Order ID:</strong> #${order.id.slice(0, 8)}</p>
+          <p><strong>Order Date:</strong> ${formatDate(order.created_at)}</p>
+          <p><strong>Status:</strong> 
+            <span class="status-${order.status.toLowerCase()}">
+              ${order.status}
+            </span>
+          </p>
+          <p><em>${order.order_notes}</em></p>
         </div>
-
         <h3>Order Items</h3>
         <table class="items-table">
             <thead>
@@ -197,7 +209,41 @@ const handler = async (req: Request): Promise<Response> => {
         </div>
     </div>
 </body>
-</html>`;
+</html>`
+  };
+};
+
+const handler = async (req: Request): Promise<Response> => {
+  // Handle CORS preflight request
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders });
+  }
+  if (req.method === "POST") {
+    try {
+      const { order, email, items } = await req.json();
+      
+      if (!order || !email || !items) {
+        return new Response("Missing required data", { status: 400 });
+      }
+      // Add debug logging
+      console.log('Order confirmation data:', {
+        items,
+        order,
+        itemsWithNames: items.map(item => ({
+          id: item.id,
+          name: item.product_name || item.title,
+          quantity: item.quantity
+        }))
+      });
+
+      const totalAmount = items.reduce((sum: number, item: any) => 
+        sum + (item.price * item.quantity), 0
+      );
+      // Use the delivery fee passed from checkout
+      const deliveryFee = order.delivery_fee || 0;
+      const finalTotal = order.final_total || totalAmount + deliveryFee;
+
+      const emailContent = getEmailContentByStatus(order, items, totalAmount, deliveryFee, finalTotal);
 
       const response = await fetch("https://api.resend.com/emails", {
         method: "POST",
@@ -207,9 +253,9 @@ const handler = async (req: Request): Promise<Response> => {
         },
         body: JSON.stringify({
           from: "browneggs.shop <contact@browneggs.shop>",
-          to: [email,'contact@browneggs.shop'],
-          subject: `Order Confirmation #${order.id.slice(0, 8)} - browneggs.shop`,
-          html: emailContent,
+          to: [email, 'contact@browneggs.shop'],
+          subject: emailContent.subject,
+          html: emailContent.html,
         }),
       });
 
